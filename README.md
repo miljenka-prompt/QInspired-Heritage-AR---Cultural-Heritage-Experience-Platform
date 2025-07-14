@@ -66,6 +66,27 @@ Code Explanation
 - Measurement outcomes ('00', '01', '10', '11') determine sounds, visuals, and smells—reflecting daily life in Pompeii.
 - The output can be used in AR platforms (Unity, ARKit) to render holograms and trigger sensory cues.
 
+- ### 🔧 Core Function: `generate_epoch_vibe(temperature)`
+
+The `generate_epoch_vibe` method is the heart of the QuantumHippie engine.  
+It simulates a 2-qubit quantum circuit to generate a historically inspired AR scene — dynamically shaped by quantum randomness and Mediterranean temperature.
+
+**Quantum logic used:**
+
+- `H` (Hadamard) gate creates superposition  
+- `CX` (CNOT) gate entangles the qubits  
+- `RY` rotation is driven by ambient temperature  
+- Measurement collapses the system into one of four multisensory outcomes
+
+**Output format:**
+
+```python
+{
+  "sound": "Market chatter",
+  "visual": "Oil and wine shop with amphorae",
+  "smell": "Olive oil"
+}
+
 Feasibility Study  
 -----------------
 Technical Feasibility:  
