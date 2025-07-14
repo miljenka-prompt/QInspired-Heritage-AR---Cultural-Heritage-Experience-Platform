@@ -160,6 +160,11 @@ For commercial use, please contact the author.
 
 License details: https://creativecommons.org/licenses/by-nc/4.0/
 
+© 2025 Miljenka Ćurković. All rights reserved.
 
+This software and all accompanying materials are protected by copyright law.  
+Commercial use, distribution, or modification without explicit written permission from the author is strictly prohibited.
+
+For licensing and usage inquiries, please contact: [your email or contact info]
 
 
