@@ -139,32 +139,33 @@ Conclusion
 ----------
 The project is feasible with current technology for a basic AR experience. Development phases: start with visuals and sound, add scents later. The quantum element provides unique dynamism and authenticity.
 
-License  
+License and Copyright
 
 QuantumHippie AR Pompeii Experience
-Copyright (c) 2025 [Tvoje ime]
+Copyright © 2025 Miljenka Ćurković. All rights reserved.
 
 This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
 
 You are free to:
-- Share — copy and redistribute the material in any medium or format
-- Adapt — remix, transform, and build upon the material
+
+Share — copy and redistribute the material in any medium or format
+
+Adapt — remix, transform, and build upon the material
+
 
 Under the following terms:
-- Attribution — You must give appropriate credit and indicate if changes were made.
-- NonCommercial — You may not use the material for commercial purposes without explicit permission.
 
-This project is intended for educational, cultural, and non-profit use only.
+Attribution — You must give appropriate credit to Miljenka Ćurković and indicate if changes were made.
 
-For commercial use, please contact the author.
+NonCommercial — You may not use this material for commercial purposes without explicit written permission.
 
-License details: https://creativecommons.org/licenses/by-nc/4.0/
 
-© 2025 Miljenka Ćurković. All rights reserved.
+Commercial use, distribution, or modification of this software and all accompanying materials is strictly prohibited without prior written authorization from the author.
 
-This software and all accompanying materials are protected by copyright law.  
-Commercial use, distribution, or modification without explicit written permission from the author is strictly prohibited.
+For licensing requests or commercial inquiries, please contact: miljenka.cur@gmail.com
 
-For licensing and usage inquiries, please contact: [your email or contact info]
+
+
+
 
 
