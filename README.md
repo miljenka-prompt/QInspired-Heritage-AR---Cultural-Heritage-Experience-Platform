@@ -12,6 +12,27 @@ Ovo spremište sadrži eksperimentalni kod generiran kroz iterativnu interakciju
 Preporučuje se **stručna revizija i neovisna validacija** prije ponovne upotrebe ili integracije u druge sustave.  
 Projekt se dijeli u duhu otvorenog znanstvenog istraživanja i suradnje.
 
+### 🦾 AI Peer Review Validacija
+
+Kako bih minimizirala mogućnost pogrešaka, halucinacija ili nenamjernih propusta, konfiguracija ovog projekta prošla je kroz **validaciju s više naprednih velikih jezičnih modela (LLM-ova):** Perplexity, Gemini, DeepSeek, Grok i ChatGPT.
+
+- **Svi modeli** su neovisno ocijenili rješenje kao inovativno i funkcionalno te predložili moguća poboljšanja.
+- Pronađen je i ispravljen jedan tipfeler, dok ozbiljne logičke ili sigurnosne greške nisu detektirane.
+- Konceptualna vrijednost i sigurnost projekta dodatno su potvrđene konsenzusom među modelima.
+
+Ipak, **ručna stručna revizija i testiranje u kontroliranom okruženju** ostaju nužni prije bilo kakve integracije u produkciju.
+
+### 🦾 AI Peer Review Validation
+
+To minimize the risk of errors, hallucinations, or accidental oversights, this project’s configuration underwent **validation by several advanced large language models (LLMs):** Perplexity, Gemini, DeepSeek, Grok, and ChatGPT.
+
+- **All models** independently assessed the solution as innovative and functional, and suggested possible improvements.
+- One typo was detected and corrected; no severe logical or security-relevant issues were found.
+- The conceptual value and safety of the project were further confirmed by consensus among models.
+
+Nonetheless, **manual expert review and testing in a controlled environment** remain essential before any production integration.
+
+
 # QuantumHippie-AR-Pompeii-Experience
 Immersive AR project that uses quantum computing to dynamically recreate the sights, sounds, and scents of ancient Pompeii for education, tourism, and cultural heritage.
 
