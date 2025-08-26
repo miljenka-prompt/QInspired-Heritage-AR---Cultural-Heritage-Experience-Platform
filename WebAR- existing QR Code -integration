@@ -1,0 +1,27 @@
+# WebAR QR Code Integration – Technical Guide
+
+## 1️⃣ Smart Landing Page
+- Kreirati **jednu web stranicu** na koju vodi QR kod.  
+- Landing page automatski detektira uređaj i pokreće WebAR.  
+- **Bez potrebe za instalacijom dodatnih aplikacija**.  
+
+## 2️⃣ Modifikacije postojećeg sustava
+- Update **QR koda** → novi URL prema landing page-u.  
+- Provjeriti **kompatibilnost WebAR skripti** s postojećim serverom.  
+- Integrirati **AR assete** (3D modeli, zvuk, video).  
+- Dodati **fallback za preglednike bez WebAR podrške**.  
+
+## 3️⃣ Timeline & Troškovi
+- Landing page i QR integracija → ~1 tjedan  
+- Upload AR asseta i testiranje → ~3-4 dana  
+- Procjena troškova → €1.500 – €3.000 (ovisno o infrastrukturi)  
+
+## 4️⃣ Testing Plan
+- Skenirati QR kod na različitim uređajima (iOS, Android).  
+- Provjeriti automatsko pokretanje WebAR scena i zvuka.  
+- Testirati fallback scenarije za uređaje koji ne podržavaju WebAR.  
+- Validirati performanse i učitavanje AR asseta (smooth rendering).  
+
+---
+
+**Napomena:** Dokument je **praktičan, action-oriented**, fokusiran na brzo provođenje integracije, bez teorijskih rasprava.
