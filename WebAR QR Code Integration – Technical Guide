@@ -1,0 +1,101 @@
+# WebAR QR Code Integration – Technical Guide
+
+**QEIT Principle: Resonant Interactive Feedback**  
+Opis: Sustav koji prati ponašanje korisnika i performanse AR iskustva, rezonira s podacima i prilagođava preporuke na temelju stvarnog korištenja.
+Licenca: QI Heritage Licenca
+
+## 1️⃣ Smart Landing Page
+- Kreirati **jednu web stranicu** na koju vodi QR kod.  
+- Landing page automatski detektira uređaj i pokreće WebAR.  
+- **Bez potrebe za instalacijom dodatnih aplikacija**.  
+- **HTTPS i sigurnosna provjera** za sve AR assete kako bi se spriječile neautorizirane injekcije.
+
+
+## 2️⃣ Modifikacije postojećeg sustava
+- Update **QR koda** → novi URL prema landing page-u.  
+- Provjeriti **kompatibilnost WebAR skripti** s postojećim serverom i browserima (iOS Safari, Android Chrome/WebView).  
+- Integrirati **AR assete** (3D modeli, zvuk, video).  
+- Dodati **fallback za preglednike bez WebAR podrške**:  
+  - Minimalni HTML5/2D viewer  
+  - Informacija korisniku da AR nije podržan  
+
+
+## 3️⃣ Timeline & Troškovi
+- Landing page i QR integracija → ~1 tjedan  
+- Upload AR asseta i testiranje → ~3-4 dana  
+- Procjena troškova → €1.500 – €3.000 (ovisno o infrastrukturi)  
+- Dodati buffer 1-2 dana za bugfixing i QA testove
+
+
+## 4️⃣ Testing Plan & Feedback Loop
+- Skenirati QR kod na različitim uređajima (iOS, Android).  
+- Provjeriti automatsko pokretanje WebAR scena i zvuka.  
+- Testirati fallback scenarije za uređaje koji ne podržavaju WebAR.  
+- Validirati performanse i učitavanje AR asseta (smooth rendering).  
+- **Resonant Interactive Feedback loop:**  
+  - Landing page bilježi metrike: load time, fallback aktiviran, asset errors  
+  - Automatski update preporuka za optimizaciju AR asseta i iskustva korisnika  
+
+
+## 5️⃣ Performance & Optimization
+- Kompresija 3D modela i tekstura za mobilne uređaje  
+- Minimiziranje HTTP zahtjeva za brže učitavanje  
+- Lazy loading AR asseta gdje je moguće  
+
+
+
+## 6️⃣ QA & Deployment
+- QA tim koristi checklist:  
+  - Sken QR kod → provjeri AR pokretanje i zvuk  
+  - Provjeri fallback prikaz  
+  - Provjeri metrike performansi  
+- Deployment: HTTPS landing page + integracija u postojeći server  
+
+---
+
+## 7️⃣ Python Snippet: Resonant Interactive Feedback
+
+```python
+from flask import Flask, request, jsonify
+from datetime import datetime
+import json
+import os
+
+app = Flask(__name__)
+
+# Metrike spremamo lokalno u JSON za demonstraciju
+METRICS_FILE = "resonant_feedback_metrics.json"
+
+def save_metric(metric: dict):
+    """Spremi metriku u lokalni JSON file"""
+    if os.path.exists(METRICS_FILE):
+        with open(METRICS_FILE, "r") as f:
+            data = json.load(f)
+    else:
+        data = []
+
+    data.append(metric)
+
+    with open(METRICS_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+@app.route("/track", methods=["POST"])
+def track():
+    """
+    Endpoint za slanje metrike sa landing page-a
+    Očekuje JSON payload:
+    {
+        "device": "iOS/Android",
+        "browser": "Safari/Chrome",
+        "ar_loaded": true/false,
+        "fallback_used": true/false,
+        "load_time_ms": 1234
+    }
+    """
+    payload = request.json
+    metric = {
+        "timestamp": datetime.now().isoformat(),
+        "device": payload.get("device", "unknown"),
+        "browser": payload.get("browser", "unknown"),
+        "ar_loaded": payload.get("ar_loaded", False),
+        "fallback_used": payload.get("fallback_used",
