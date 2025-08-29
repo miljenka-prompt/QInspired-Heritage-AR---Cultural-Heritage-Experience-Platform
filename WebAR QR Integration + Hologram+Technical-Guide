@@ -1,0 +1,116 @@
+# WebAR QR Integration + Hologram Technical Guide
+
+**QEIT Principle: Resonant Interactive Feedback**  
+Opis: Sustav koji prati ponašanje korisnika i performanse AR iskustva, rezonira s podacima i prilagođava preporuke na temelju stvarnog korištenja.
+
+
+## 1️⃣ Smart Landing Page
+- Kreirati **jednu web stranicu** na koju vodi QR kod.  
+- Landing page automatski detektira uređaj i pokreće WebAR.  
+- **Bez potrebe za instalacijom dodatnih aplikacija**.  
+- **HTTPS i sigurnosna provjera** za sve AR assete.
+
+
+## 2️⃣ Modifikacije postojećeg sustava
+- Update **QR koda** → novi URL prema landing page-u.  
+- Provjeriti **kompatibilnost WebAR skripti** s postojećim serverom i browserima.  
+- Integrirati **AR assete** (3D modeli, zvuk, video).  
+- Dodati **fallback za preglednike bez WebAR podrške**:  
+  - Minimalni HTML5/2D viewer  
+  - Obavijest korisniku da AR nije podržan  
+
+
+## 3️⃣ Timeline & Troškovi
+- Landing page i QR integracija → ~1 tjedan  
+- Upload AR asseta i testiranje → ~3-4 dana  
+- Procjena troškova → €1.500 – €3.000  
+- Buffer 1-2 dana za bugfixing i QA testove
+
+---
+
+## 4️⃣ Testing Plan & Feedback Loop
+- Skenirati QR kod na različitim uređajima (iOS, Android).  
+- Provjeriti automatsko pokretanje WebAR scena i zvuka.  
+- Testirati fallback scenarije za uređaje koji ne podržavaju WebAR.  
+- Validirati performanse i učitavanje AR asseta.  
+- **Resonant Interactive Feedback loop:**  
+  - Landing page bilježi metrike: load time, fallback aktiviran, asset errors  
+  - Automatski update preporuka za optimizaciju AR asseta i iskustva korisnika  
+
+---
+
+## 5️⃣ Python Snippet: Resonant Interactive Feedback
+
+```python
+from flask import Flask, request, jsonify
+from datetime import datetime
+import json
+import os
+
+app = Flask(__name__)
+
+METRICS_FILE = "resonant_feedback_metrics.json"
+
+def save_metric(metric: dict):
+    if os.path.exists(METRICS_FILE):
+        with open(METRICS_FILE, "r") as f:
+            data = json.load(f)
+    else:
+        data = []
+
+    data.append(metric)
+
+    with open(METRICS_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+@app.route("/track", methods=["POST"])
+def track():
+    payload = request.json
+    metric = {
+        "timestamp": datetime.now().isoformat(),
+        "device": payload.get("device", "unknown"),
+        "browser": payload.get("browser", "unknown"),
+        "ar_loaded": payload.get("ar_loaded", False),
+        "fallback_used": payload.get("fallback_used", False),
+        "load_time_ms": payload.get("load_time_ms", 0)
+    }
+
+    save_metric(metric)
+    return jsonify({"status": "success"}), 200
+
+@app.route("/metrics", methods=["GET"])
+def get_metrics():
+    if os.path.exists(METRICS_FILE):
+        with open(METRICS_FILE, "r") as f:
+            data = json.load(f)
+        return jsonify(data)
+    else:
+        return jsonify([])
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+6️⃣ Hologramski Prikaz In Situ – Tehničke Opcije
+
+Opcija	Tehnologija	Prednosti	Ograničenja	Procjena troškova
+
+Volumetrijski hologram	Višestruki projektori i kamere, 3D rekonstrukcija	Pravi 3D prikaz, vidljiv iz više kutova	Skupa oprema, zahtijeva kontrolirani prostor, transport težak	Visoki (~€20.000+)
+Pepper’s Ghost	Refleksija na staklu/akrilu uz projektor	Relativno jeftino, jednostavno za prezentacije	Efektivno samo iz određenog kuta, nije stvarni volumetrijski hologram	Niski (~€500 – €2.000)
+AR + Waveguide / Headset	HoloLens, Magic Leap, Nreal	Mobilno, interaktivno, visoka preciznost	Svi gledatelji moraju nositi headset	Srednji (~€500 – €3.000 po uređaju)
+Projekcija u maglu / aerosol	Projekcija 3D objekta u finim česticama	Vidljiv iz više kutova, impresivan efekt	Komplicirana kontrola okoline, osjetljivo na vjetar, skuplje	Visoki (~€10.000+)
+WebAR / AR na uređaju	WebAR asseti na mobilnim uređajima	Brzo implementirati, široka dostupnost	Nema pravi 3D prikaz u prostoru, vidljivo samo kroz ekran	Niski (~€0 – €3.000, ovisno o assetima)
+
+
+
+Preporuka
+
+Interaktivno i prenosivo → WebAR + AR headset
+
+Statistički, impresivan prikaz → volumetrijski hologram ili projekcija u maglu
+
+Demonstracije i low-cost efekt → Pepper’s Ghost
+
+
+
+
