@@ -1,5 +1,6 @@
-# WebAR QR Code Integration - Complete Implementation
-# QEIT Principle: Resonant Interactive Feedback System
+
+# UNIFIED QUANTUMHIPPIE + WEBAR INTEGRATION
+# Combines both QuantumHippie AR Pompeii and WebAR QR systems
 
 from flask import Flask, request, jsonify, render_template_string
 from flask_cors import CORS
@@ -8,193 +9,349 @@ import json
 import os
 import hashlib
 import time
+import random
+import numpy as np
+import warnings
 from collections import defaultdict
 import logging
 
+warnings.filterwarnings('ignore')
+
+# Quantum imports with fallback
+try:
+    from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
+    from qiskit_aer import Aer
+    print("✅ Qiskit loaded successfully")
+    QISKIT_AVAILABLE = True
+except ImportError:
+    print("⚠️ Qiskit not available, using classical fallback")
+    QISKIT_AVAILABLE = False
+
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # Enable CORS for WebAR
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+CORS(app)
+app.config['SECRET_KEY'] = 'your-quantum-secret-key'
 
 # Configuration
-METRICS_FILE = "resonant_feedback_metrics.json"
+METRICS_FILE = "unified_metrics.json"
 RATE_LIMIT_FILE = "rate_limits.json"
 MAX_REQUESTS_PER_MINUTE = 60
-SUPPORTED_BROWSERS = {
-    'chrome': {'min_version': 67, 'ar_support': True},
-    'safari': {'min_version': 11, 'ar_support': True},
-    'firefox': {'min_version': 60, 'ar_support': False},
-    'edge': {'min_version': 79, 'ar_support': True}
+
+# 🏛️ Enhanced Pompeii Scene Database (from QuantumHippie)
+POMPEII_SCENES = {
+    '00': {
+        "location": "Thermopolium (Fast Food Counter)",
+        "sound": "Laughter from tavern, sizzling food",
+        "visual": "Romans enjoying quick meal, steam rising from pots",
+        "smell": "Freshly baked bread and roasted meat",
+        "historical_context": "Popular street food spots in ancient Pompeii",
+        "time_of_day": "midday",
+        "ar_assets": {
+            "3d_model": "thermopolium.glb",
+            "audio": "tavern_sounds.mp3",
+            "texture": "roman_counter.jpg"
+        }
+    },
+    '01': {
+        "location": "Villa dei Misteri Triclinium",
+        "sound": "Water trickling from fountain, soft conversation",
+        "visual": "Elaborate feast with reclining diners, frescoed walls",
+        "smell": "Wine and roses, Mediterranean herbs",
+        "historical_context": "Elite dining rituals and mystery cult practices",
+        "time_of_day": "evening",
+        "ar_assets": {
+            "3d_model": "villa_triclinium.glb",
+            "audio": "roman_feast.mp3",
+            "texture": "fresco_walls.jpg"
+        }
+    },
+    '10': {
+        "location": "Forum Market Square",
+        "sound": "Bustling market chatter, coin clinking",
+        "visual": "Merchants with amphorae, animated haggling",
+        "smell": "Olive oil, fish sauce (garum), spices",
+        "historical_context": "Commercial heart of Pompeii",
+        "time_of_day": "morning",
+        "ar_assets": {
+            "3d_model": "forum_market.glb",
+            "audio": "market_ambience.mp3",
+            "texture": "stone_market.jpg"
+        }
+    },
+    '11': {
+        "location": "Private Cubiculum (Bedroom)",
+        "sound": "Soft snoring, distant street sounds",
+        "visual": "Roman woman resting, ornate bed, oil lamp flickering",
+        "smell": "Incense and perfumed oils",
+        "historical_context": "Daily life in Roman domestic spaces",
+        "time_of_day": "afternoon",
+        "ar_assets": {
+            "3d_model": "roman_bedroom.glb",
+            "audio": "bedroom_ambience.mp3",
+            "texture": "bedroom_decor.jpg"
+        }
+    }
 }
 
-# Setup logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-class ResonantFeedbackSystem:
-    """QEIT Principle: Resonant Interactive Feedback implementation"""
-    
+# 🌿⚛️ Enhanced QuantumHippie Class with WebAR Integration
+class UnifiedQuantumHippie:
     def __init__(self):
-        self.metrics = []
-        self.recommendations = []
-        self.performance_thresholds = {
-            'load_time_critical': 5000,  # 5 seconds
-            'load_time_good': 3000,      # 3 seconds
-            'ar_success_rate_min': 0.8   # 80% success rate
-        }
+        self.scene_history = []
+        self.audio_database = [
+            "tavern_laughter.mp3", "fountain_water.mp3", "market_chatter.mp3",
+            "snoring_soft.mp3", "coins_clinking.mp3", "sizzling_food.mp3",
+            "roman_conversation.mp3", "street_ambience.mp3"
+        ]
+        
+        if QISKIT_AVAILABLE:
+            self.quantum_backend = Aer.get_backend('qasm_simulator')
+        else:
+            self.quantum_backend = None
     
-    def save_metric(self, metric: dict):
-        """Save metric with validation and security checks"""
+    def generate_quantum_scene(self, temperature=25.0, humidity=60.0, user_location=None):
+        """
+        Generate AR scene using quantum algorithms OR classical fallback
+        Now includes WebAR asset information
+        """
         try:
-            # Validate required fields
-            required_fields = ['device', 'browser', 'ar_loaded', 'load_time_ms']
-            for field in required_fields:
-                if field not in metric:
-                    raise ValueError(f"Missing required field: {field}")
+            if QISKIT_AVAILABLE and self.quantum_backend:
+                # Real quantum generation
+                quantum_state = self._quantum_circuit_generation(temperature, humidity)
+            else:
+                # Classical fallback
+                quantum_state = random.choice(['00', '01', '10', '11'])
+                
+            # Get scene from quantum/classical state
+            scene = POMPEII_SCENES[quantum_state].copy()
             
-            # Data sanitization
-            sanitized_metric = {
-                "timestamp": datetime.now().isoformat(),
-                "device": str(metric.get("device", "unknown"))[:50],
-                "browser": str(metric.get("browser", "unknown"))[:50],
-                "ar_loaded": bool(metric.get("ar_loaded", False)),
-                "fallback_used": bool(metric.get("fallback_used", False)),
-                "load_time_ms": max(0, int(metric.get("load_time_ms", 0))),
-                "user_agent": str(metric.get("user_agent", ""))[:200],
-                "screen_resolution": str(metric.get("screen_resolution", ""))[:20],
-                "ar_session_duration": max(0, int(metric.get("ar_session_duration", 0))),
-                "errors": str(metric.get("errors", ""))[:500]
+            # Add environmental modifiers
+            scene = self._apply_environmental_effects(scene, temperature, humidity)
+            
+            # Add WebAR metadata
+            scene['quantum_signature'] = quantum_state
+            scene['generation_timestamp'] = datetime.now().isoformat()
+            scene['environmental_data'] = {
+                'temperature': temperature,
+                'humidity': humidity,
+                'location': user_location
             }
             
-            # Load existing metrics
+            # Store in history
+            self.scene_history.append(scene)
+            
+            return scene
+            
+        except Exception as e:
+            print(f"⚠️ Scene generation error: {e}")
+            # Ultimate fallback
+            return self._fallback_scene(temperature)
+    
+    def _quantum_circuit_generation(self, temperature, humidity):
+        """Real quantum circuit execution"""
+        qreg = QuantumRegister(2, 'q')
+        creg = ClassicalRegister(2, 'c')
+        qc = QuantumCircuit(qreg, creg)
+        
+        # Quantum gates
+        qc.h(0)  # Superposition
+        qc.cx(0, 1)  # Entanglement
+        
+        # Environmental influences
+        temp_normalized = max(0, min(1, (temperature - 15.0) / 20.0))
+        qc.ry(temp_normalized * np.pi, 0)
+        
+        humidity_normalized = max(0, min(1, (humidity - 40.0) / 40.0))
+        qc.rz(humidity_normalized * 0.5 * np.pi, 1)
+        
+        # Measurements
+        qc.measure(qreg, creg)
+        
+        # Execute
+        job = self.quantum_backend.run(qc, shots=1)
+        result = job.result()
+        counts = result.get_counts()
+        
+        return list(counts.keys())[0] if counts else '00'
+    
+    def _apply_environmental_effects(self, scene, temperature, humidity):
+        """Apply environmental conditions to scene"""
+        if temperature > 28:
+            scene['environmental_note'] = "Hot Mediterranean day"
+            scene['visual'] += ", people seeking shade"
+        elif temperature < 22:
+            scene['environmental_note'] = "Cool day"
+            scene['smell'] += ", wood smoke from heating"
+        
+        if humidity > 70:
+            scene['weather'] = "Humid air from Bay of Naples"
+            scene['visual'] += ", hazy atmosphere"
+        
+        return scene
+    
+    def _fallback_scene(self, temperature):
+        """Emergency fallback scene"""
+        return {
+            "location": "Generic Pompeii Street",
+            "sound": "Ancient Roman ambience",
+            "visual": "Stone buildings and Roman citizens",
+            "smell": "Mediterranean herbs",
+            "historical_context": "Daily life in ancient Pompeii",
+            "quantum_signature": "classical",
+            "environmental_data": {"temperature": temperature},
+            "ar_assets": {
+                "3d_model": "fallback_scene.glb",
+                "audio": "generic_roman.mp3"
+            }
+        }
+    
+    def get_ar_assets_for_scene(self, scene):
+        """Get AR assets URLs for WebAR rendering"""
+        assets = scene.get('ar_assets', {})
+        base_url = "/static/ar_assets/"
+        
+        return {
+            "model_url": base_url + assets.get('3d_model', 'default.glb'),
+            "audio_url": base_url + assets.get('audio', 'default.mp3'),
+            "texture_url": base_url + assets.get('texture', 'default.jpg'),
+            "scene_id": scene.get('quantum_signature', 'unknown')
+        }
+
+# 🔄 QEIT Resonant Feedback System (from WebAR)
+class UnifiedResonantFeedback:
+    def __init__(self):
+        self.performance_thresholds = {
+            'load_time_critical': 5000,
+            'load_time_good': 3000,
+            'ar_success_rate_min': 0.8,
+            'quantum_generation_time': 2000
+        }
+    
+    def save_unified_metric(self, metric_data):
+        """Save metrics from both quantum generation and WebAR performance"""
+        try:
+            # Enhanced metric structure
+            unified_metric = {
+                "timestamp": datetime.now().isoformat(),
+                "session_type": metric_data.get("session_type", "webar"),  # 'quantum', 'webar', or 'hybrid'
+                
+                # WebAR metrics
+                "device": str(metric_data.get("device", "unknown"))[:50],
+                "browser": str(metric_data.get("browser", "unknown"))[:50],
+                "ar_loaded": bool(metric_data.get("ar_loaded", False)),
+                "fallback_used": bool(metric_data.get("fallback_used", False)),
+                "load_time_ms": max(0, int(metric_data.get("load_time_ms", 0))),
+                
+                # Quantum metrics
+                "quantum_used": bool(metric_data.get("quantum_used", False)),
+                "quantum_state": str(metric_data.get("quantum_state", ""))[:10],
+                "scene_location": str(metric_data.get("scene_location", ""))[:100],
+                "environmental_temp": float(metric_data.get("environmental_temp", 0)),
+                
+                # Performance metrics
+                "ar_session_duration": max(0, int(metric_data.get("ar_session_duration", 0))),
+                "user_interactions": max(0, int(metric_data.get("user_interactions", 0))),
+                "errors": str(metric_data.get("errors", ""))[:500]
+            }
+            
+            # Load and save
             if os.path.exists(METRICS_FILE):
                 with open(METRICS_FILE, "r", encoding='utf-8') as f:
                     data = json.load(f)
             else:
                 data = []
             
-            data.append(sanitized_metric)
+            data.append(unified_metric)
             
-            # Keep only last 10000 entries to prevent file bloat
+            # Keep reasonable file size
             if len(data) > 10000:
                 data = data[-10000:]
             
-            # Save metrics
             with open(METRICS_FILE, "w", encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
             
-            # Trigger resonant analysis
-            self.analyze_and_recommend(data)
-            
-            logger.info(f"Metric saved: {sanitized_metric['device']}, AR loaded: {sanitized_metric['ar_loaded']}")
+            # Generate recommendations
+            self._generate_recommendations(data)
             return True
             
         except Exception as e:
-            logger.error(f"Error saving metric: {e}")
+            print(f"Error saving unified metric: {e}")
             return False
     
-    def analyze_and_recommend(self, metrics_data):
-        """QEIT Resonant Analysis - Generate recommendations from usage patterns"""
-        if len(metrics_data) < 10:  # Need minimum data for analysis
+    def _generate_recommendations(self, data):
+        """Generate QEIT recommendations from unified data"""
+        if len(data) < 20:
             return
         
-        # Analyze recent metrics (last 100 entries)
-        recent_metrics = metrics_data[-100:]
-        
-        # Calculate performance metrics
-        ar_success_rate = sum(1 for m in recent_metrics if m['ar_loaded']) / len(recent_metrics)
-        avg_load_time = sum(m['load_time_ms'] for m in recent_metrics) / len(recent_metrics)
-        fallback_usage = sum(1 for m in recent_metrics if m['fallback_used']) / len(recent_metrics)
-        
-        # Device/browser analysis
-        device_stats = defaultdict(list)
-        for metric in recent_metrics:
-            key = f"{metric['device']}_{metric['browser']}"
-            device_stats[key].append(metric)
-        
+        recent_data = data[-50:]
         recommendations = []
         
-        # Performance recommendations
-        if avg_load_time > self.performance_thresholds['load_time_critical']:
-            recommendations.append({
-                'type': 'performance',
-                'priority': 'critical',
-                'message': f'Average load time ({avg_load_time:.0f}ms) exceeds critical threshold',
-                'action': 'Optimize AR assets, implement progressive loading'
-            })
-        elif avg_load_time > self.performance_thresholds['load_time_good']:
-            recommendations.append({
-                'type': 'performance',
-                'priority': 'medium',
-                'message': f'Load time ({avg_load_time:.0f}ms) could be improved',
-                'action': 'Consider asset compression and CDN implementation'
-            })
+        # AR performance analysis
+        ar_success_rate = sum(1 for m in recent_data if m.get('ar_loaded', False)) / len(recent_data)
+        avg_load_time = sum(m.get('load_time_ms', 0) for m in recent_data) / len(recent_data)
         
-        # AR success rate analysis
-        if ar_success_rate < self.performance_thresholds['ar_success_rate_min']:
+        # Quantum usage analysis
+        quantum_usage = sum(1 for m in recent_data if m.get('quantum_used', False)) / len(recent_data)
+        
+        if ar_success_rate < 0.7:
             recommendations.append({
-                'type': 'compatibility',
+                'type': 'ar_compatibility',
                 'priority': 'high',
-                'message': f'AR success rate ({ar_success_rate:.1%}) below target',
-                'action': 'Improve fallback experience, update browser detection'
+                'message': f'AR success rate ({ar_success_rate:.1%}) needs improvement',
+                'action': 'Enhance fallback experience and browser detection'
             })
         
-        # Fallback usage analysis
-        if fallback_usage > 0.3:  # More than 30% using fallback
+        if quantum_usage < 0.5:
             recommendations.append({
-                'type': 'compatibility',
+                'type': 'quantum_integration',
                 'priority': 'medium',
-                'message': f'High fallback usage ({fallback_usage:.1%})',
-                'action': 'Consider expanding WebAR browser support'
+                'message': f'Low quantum usage ({quantum_usage:.1%})',
+                'action': 'Improve Qiskit installation documentation'
             })
         
-        # Device-specific recommendations
-        for device_browser, device_metrics in device_stats.items():
-            if len(device_metrics) >= 5:  # Enough data for analysis
-                device_ar_rate = sum(1 for m in device_metrics if m['ar_loaded']) / len(device_metrics)
-                if device_ar_rate < 0.5:  # Less than 50% success rate
-                    recommendations.append({
-                        'type': 'device_specific',
-                        'priority': 'medium',
-                        'message': f'Poor AR performance on {device_browser}',
-                        'action': f'Optimize AR experience for {device_browser} specifically'
-                    })
+        if avg_load_time > 4000:
+            recommendations.append({
+                'type': 'performance',
+                'priority': 'high',
+                'message': f'High average load time ({avg_load_time:.0f}ms)',
+                'action': 'Optimize AR assets and implement CDN'
+            })
         
         # Save recommendations
-        recommendation_entry = {
+        rec_data = {
             'timestamp': datetime.now().isoformat(),
-            'analysis_period': f'Last {len(recent_metrics)} sessions',
-            'metrics_summary': {
+            'analysis_scope': f'{len(recent_data)} recent sessions',
+            'key_metrics': {
                 'ar_success_rate': ar_success_rate,
-                'avg_load_time_ms': avg_load_time,
-                'fallback_usage': fallback_usage
+                'quantum_usage': quantum_usage,
+                'avg_load_time': avg_load_time
             },
             'recommendations': recommendations
         }
         
-        # Store recommendations
-        rec_file = "recommendations.json"
-        if os.path.exists(rec_file):
-            with open(rec_file, "r", encoding='utf-8') as f:
-                rec_data = json.load(f)
-        else:
-            rec_data = []
-        
-        rec_data.append(recommendation_entry)
-        
-        # Keep only last 50 recommendation cycles
-        if len(rec_data) > 50:
-            rec_data = rec_data[-50:]
-        
-        with open(rec_file, "w", encoding='utf-8') as f:
-            json.dump(rec_data, f, indent=2, ensure_ascii=False)
+        rec_file = "unified_recommendations.json"
+        try:
+            if os.path.exists(rec_file):
+                with open(rec_file, "r", encoding='utf-8') as f:
+                    all_recs = json.load(f)
+            else:
+                all_recs = []
+            
+            all_recs.append(rec_data)
+            if len(all_recs) > 20:
+                all_recs = all_recs[-20:]
+            
+            with open(rec_file, "w", encoding='utf-8') as f:
+                json.dump(all_recs, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"Error saving recommendations: {e}")
 
-# Initialize feedback system
-feedback_system = ResonantFeedbackSystem()
+# Initialize systems
+quantum_hippie = UnifiedQuantumHippie()
+feedback_system = UnifiedResonantFeedback()
 
-# Rate limiting functionality
+# Rate limiting (from WebAR system)
 def check_rate_limit(client_ip):
-    """Simple rate limiting to prevent abuse"""
+    """Rate limiting to prevent abuse"""
     try:
         if os.path.exists(RATE_LIMIT_FILE):
             with open(RATE_LIMIT_FILE, "r") as f:
@@ -202,97 +359,34 @@ def check_rate_limit(client_ip):
         else:
             rate_data = {}
         
-        # Clean old entries (older than 1 minute)
         current_time = time.time()
         rate_data = {ip: timestamps for ip, timestamps in rate_data.items() 
                     if any(current_time - ts < 60 for ts in timestamps)}
         
-        # Check current IP
         ip_requests = rate_data.get(client_ip, [])
         recent_requests = [ts for ts in ip_requests if current_time - ts < 60]
         
         if len(recent_requests) >= MAX_REQUESTS_PER_MINUTE:
             return False
         
-        # Add current request
         recent_requests.append(current_time)
         rate_data[client_ip] = recent_requests
         
-        # Save updated rate data
         with open(RATE_LIMIT_FILE, "w") as f:
             json.dump(rate_data, f)
         
         return True
     except:
-        return True  # Allow request if rate limiting fails
+        return True
 
-def detect_browser_capabilities(user_agent):
-    """Detect browser and WebAR capabilities"""
-    user_agent = user_agent.lower()
-    
-    result = {
-        'browser': 'unknown',
-        'version': 0,
-        'ar_support': False,
-        'webxr_support': False,
-        'recommendation': 'fallback'
-    }
-    
-    # Browser detection
-    if 'chrome' in user_agent:
-        result['browser'] = 'chrome'
-        # Extract version (simplified)
-        try:
-            version_part = user_agent.split('chrome/')[1].split('.')[0]
-            result['version'] = int(version_part)
-        except:
-            result['version'] = 0
-    elif 'safari' in user_agent and 'chrome' not in user_agent:
-        result['browser'] = 'safari'
-        try:
-            version_part = user_agent.split('version/')[1].split('.')[0]
-            result['version'] = int(version_part)
-        except:
-            result['version'] = 0
-    elif 'firefox' in user_agent:
-        result['browser'] = 'firefox'
-        try:
-            version_part = user_agent.split('firefox/')[1].split('.')[0]
-            result['version'] = int(version_part)
-        except:
-            result['version'] = 0
-    elif 'edge' in user_agent:
-        result['browser'] = 'edge'
-        try:
-            version_part = user_agent.split('edge/')[1].split('.')[0]
-            result['version'] = int(version_part)
-        except:
-            result['version'] = 0
-    
-    # Check AR support
-    browser_info = SUPPORTED_BROWSERS.get(result['browser'], {})
-    if (result['version'] >= browser_info.get('min_version', 999) and 
-        browser_info.get('ar_support', False)):
-        result['ar_support'] = True
-        result['webxr_support'] = True
-        result['recommendation'] = 'webxr'
-    
-    # iOS specific checks
-    if 'iphone' in user_agent or 'ipad' in user_agent:
-        if result['browser'] == 'safari' and result['version'] >= 11:
-            result['ar_support'] = True
-            result['recommendation'] = 'arkit'
-    
-    return result
-
-# HTML Template for WebAR Landing Page
-LANDING_PAGE_TEMPLATE = """
+# Enhanced WebAR Landing Page Template
+UNIFIED_LANDING_PAGE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuantumHippie AR Pompeii Experience</title>
+    <title>🌿⚛️ QuantumHippie Pompeii AR Experience</title>
     <style>
         body {
             margin: 0;
@@ -307,6 +401,13 @@ LANDING_PAGE_TEMPLATE = """
             margin: 0 auto;
             text-align: center;
         }
+        .quantum-status {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #00ff88;
+        }
         .ar-status {
             padding: 15px;
             margin: 20px 0;
@@ -315,16 +416,15 @@ LANDING_PAGE_TEMPLATE = """
         }
         .ar-supported { background: #4CAF50; }
         .ar-fallback { background: #FF9800; }
-        .ar-unsupported { background: #F44336; }
         .start-button {
-            background: #00BCD4;
+            background: linear-gradient(45deg, #00BCD4, #4CAF50);
             color: white;
             border: none;
             padding: 15px 30px;
             font-size: 18px;
             border-radius: 25px;
             cursor: pointer;
-            margin: 20px;
+            margin: 10px;
             box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3);
             transition: all 0.3s ease;
         }
@@ -332,424 +432,606 @@ LANDING_PAGE_TEMPLATE = """
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
         }
-        .start-button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .metrics-info {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 20px;
-        }
-        .loading {
-            display: none;
-            margin: 20px 0;
-        }
-        .fallback-content {
-            display: none;
-            background: rgba(255, 255, 255, 0.1);
+        .scene-display {
+            background: rgba(139, 69, 19, 0.8);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
             margin: 20px 0;
-        }
-        #ar-scene {
             display: none;
-            width: 100%;
-            height: 400px;
-            border-radius: 10px;
-            margin: 20px 0;
+        }
+        .quantum-signature {
+            background: rgba(0, 255, 136, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🏛️⚛️ QuantumHippie AR Pompeii</h1>
-        <p>Experience ancient Pompeii through quantum-powered augmented reality</p>
+        <p>Quantum-powered augmented reality journey through ancient Pompeii</p>
         
-        <div id="ar-status" class="ar-status">
-            🔍 Detecting your device capabilities...
+        <div class="quantum-status">
+            <h3>⚛️ Quantum Engine Status</h3>
+            <p id="quantum-status">🔍 Initializing quantum circuits...</p>
         </div>
         
-        <button id="start-button" class="start-button" onclick="startARExperience()" disabled>
+        <div id="ar-status" class="ar-status">
+            🔍 Detecting AR capabilities...
+        </div>
+        
+        <button id="generate-scene" class="start-button" onclick="generateQuantumScene()">
+            ⚛️ Generate Quantum Scene
+        </button>
+        
+        <button id="start-ar" class="start-button" onclick="startARExperience()" disabled>
             🚀 Start AR Experience
         </button>
         
-        <div id="loading" class="loading">
-            <p>🌀 Loading AR assets...</p>
+        <div id="scene-display" class="scene-display">
+            <div id="scene-content"></div>
+            <div id="quantum-signature" class="quantum-signature"></div>
         </div>
         
-        <div id="ar-scene"></div>
-        
-        <div id="fallback-content" class="fallback-content">
-            <h3>📱 WebAR not supported</h3>
-            <p>Your device doesn't support WebAR, but you can still explore Pompeii:</p>
-            <ul>
-                <li>🖼️ Interactive 360° photos</li>
-                <li>🎵 Historical audio experience</li>
-                <li>📚 Educational content</li>
-            </ul>
-            <button class="start-button" onclick="startFallbackExperience()">
-                📖 Explore Without AR
-            </button>
-        </div>
-        
-        <div class="metrics-info">
-            <p>🔒 Privacy-focused experience tracking enabled</p>
+        <div class="metrics-info" style="font-size: 12px; opacity: 0.7; margin-top: 20px;">
+            <p>🔒 QEIT Resonant Feedback: Privacy-focused experience optimization</p>
         </div>
     </div>
 
     <script>
-        let startTime = performance.now();
-        let browserCapabilities = {};
-        let sessionStarted = false;
+        let currentScene = null;
+        let quantumAvailable = false;
+        let arCapable = false;
+        let sessionStartTime = performance.now();
         
-        // Device and browser detection
-        function detectCapabilities() {
-            const userAgent = navigator.userAgent;
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            
-            browserCapabilities = {
-                device: /iPhone|iPad|iPod/.test(userAgent) ? 'iOS' : 
-                        /Android/.test(userAgent) ? 'Android' : 'Desktop',
-                browser: getBrowserName(userAgent),
-                user_agent: userAgent,
-                screen_resolution: screen.width + 'x' + screen.height,
-                webgl_support: !!gl,
-                webxr_support: 'xr' in navigator,
-                ar_support: false
-            };
-            
-            // Check for WebXR AR support
-            if ('xr' in navigator && navigator.xr) {
-                navigator.xr.isSessionSupported('immersive-ar').then(function(supported) {
-                    browserCapabilities.ar_support = supported;
-                    updateARStatus(supported);
-                }).catch(function() {
-                    browserCapabilities.ar_support = false;
-                    updateARStatus(false);
+        // Initialize systems
+        window.addEventListener('load', function() {
+            checkQuantumAvailability();
+            detectARCapabilities();
+            setTimeout(trackInitialMetrics, 1000);
+        });
+        
+        function checkQuantumAvailability() {
+            // Simulate quantum availability check (in real scenario, this would be an API call)
+            fetch('/quantum-status')
+                .then(response => response.json())
+                .then(data => {
+                    quantumAvailable = data.available;
+                    const statusEl = document.getElementById('quantum-status');
+                    if (quantumAvailable) {
+                        statusEl.innerHTML = '✅ Quantum circuits ready! Qiskit operational';
+                        statusEl.parentElement.style.borderLeftColor = '#00ff88';
+                    } else {
+                        statusEl.innerHTML = '⚠️ Quantum fallback mode - Classical algorithms active';
+                        statusEl.parentElement.style.borderLeftColor = '#ff8800';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('quantum-status').innerHTML = 
+                        '🔄 Classical mode - Quantum simulation unavailable';
                 });
-            } else {
-                updateARStatus(false);
-            }
         }
         
-        function getBrowserName(userAgent) {
-            if (userAgent.indexOf('Chrome') > -1) return 'Chrome';
-            if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) return 'Safari';
-            if (userAgent.indexOf('Firefox') > -1) return 'Firefox';
-            if (userAgent.indexOf('Edge') > -1) return 'Edge';
-            return 'Unknown';
-        }
-        
-        function updateARStatus(arSupported) {
+        function detectARCapabilities() {
             const statusEl = document.getElementById('ar-status');
-            const startBtn = document.getElementById('start-button');
-            const fallbackEl = document.getElementById('fallback-content');
+            const arButton = document.getElementById('start-ar');
             
-            if (arSupported) {
-                statusEl.className = 'ar-status ar-supported';
-                statusEl.innerHTML = '✅ WebAR Supported! Ready for immersive experience';
-                startBtn.disabled = false;
-                startBtn.innerHTML = '🚀 Start AR Experience';
-                browserCapabilities.ar_loaded = true;
-                browserCapabilities.fallback_used = false;
+            if ('xr' in navigator && navigator.xr) {
+                navigator.xr.isSessionSupported('immersive-ar')
+                    .then(supported => {
+                        arCapable = supported;
+                        if (supported) {
+                            statusEl.className = 'ar-status ar-supported';
+                            statusEl.innerHTML = '✅ WebXR AR Ready!';
+                        } else {
+                            statusEl.className = 'ar-status ar-fallback';
+                            statusEl.innerHTML = '📱 AR Fallback Available';
+                        }
+                        arButton.disabled = false;
+                    });
             } else {
                 statusEl.className = 'ar-status ar-fallback';
-                statusEl.innerHTML = '📱 WebAR not supported, fallback mode available';
-                startBtn.disabled = false;
-                startBtn.innerHTML = '📖 Start Alternative Experience';
-                fallbackEl.style.display = 'block';
-                browserCapabilities.ar_loaded = false;
-                browserCapabilities.fallback_used = true;
+                statusEl.innerHTML = '📱 AR Fallback Mode';
+                arButton.disabled = false;
+                arButton.innerHTML = '📖 Start 2D Experience';
             }
         }
         
-        function startARExperience() {
-            if (sessionStarted) return;
-            sessionStarted = true;
+        function generateQuantumScene() {
+            const sceneDisplay = document.getElementById('scene-display');
+            const sceneContent = document.getElementById('scene-content');
+            const quantumSig = document.getElementById('quantum-signature');
             
-            const loadingEl = document.getElementById('loading');
-            const sceneEl = document.getElementById('ar-scene');
+            // Show loading
+            sceneContent.innerHTML = '🌀 Generating quantum scene...';
+            sceneDisplay.style.display = 'block';
             
-            loadingEl.style.display = 'block';
-            
-            // Simulate AR scene loading
-            setTimeout(function() {
-                loadingEl.style.display = 'none';
-                
-                if (browserCapabilities.ar_support) {
-                    // Real AR would initialize here
-                    sceneEl.innerHTML = `
-                        <div style="background: rgba(139, 69, 19, 0.8); padding: 20px; border-radius: 10px;">
-                            <h3>🏛️ AR Scene Active</h3>
-                            <p>👁️ Visual: Ancient Roman forum bustling with activity</p>
-                            <p>🔊 Audio: Sounds of merchants and Roman conversations</p>
-                            <p>👃 Scent: Olive oil and fresh bread (if supported)</p>
-                            <p>⚛️ Quantum State: |01⟩ - Villa dei Misteri scene</p>
-                            <button onclick="changeScene()" style="margin-top: 10px; padding: 10px; border-radius: 5px; border: none; background: #4CAF50; color: white;">
-                                🔄 Generate New Quantum Scene
-                            </button>
-                        </div>
-                    `;
-                    sceneEl.style.display = 'block';
-                } else {
-                    startFallbackExperience();
-                }
-                
-                // Track session metrics
-                trackMetrics();
-            }, 2000);
-        }
-        
-        function startFallbackExperience() {
-            const sceneEl = document.getElementById('ar-scene');
-            sceneEl.innerHTML = `
-                <div style="background: rgba(255, 152, 0, 0.8); padding: 20px; border-radius: 10px;">
-                    <h3>📚 Fallback Experience</h3>
-                    <p>🖼️ Viewing 360° panorama of Pompeii Forum</p>
-                    <p>🎵 Playing ambient Roman marketplace sounds</p>
-                    <p>📜 Historical context: Daily life in 79 AD</p>
-                    <p>🏛️ Explore Villa of Mysteries frescoes</p>
-                    <button onclick="nextFallbackScene()" style="margin-top: 10px; padding: 10px; border-radius: 5px; border: none; background: #FF9800; color: white;">
-                        ➡️ Next Historical Scene
-                    </button>
-                </div>
-            `;
-            sceneEl.style.display = 'block';
-            browserCapabilities.fallback_used = true;
-            trackMetrics();
-        }
-        
-        function changeScene() {
-            // Simulate quantum scene generation
-            const scenes = [
-                {state: '00', desc: 'Thermopolium - Street food counter'},
-                {state: '01', desc: 'Villa dei Misteri - Dining hall'},
-                {state: '10', desc: 'Forum Market - Trading square'},
-                {state: '11', desc: 'Private Cubiculum - Bedroom'}
-            ];
-            const randomScene = scenes[Math.floor(Math.random() * scenes.length)];
-            
-            document.querySelector('#ar-scene div h3').innerHTML = 
-                `🏛️ AR Scene Active - Quantum State: |${randomScene.state}⟩`;
-            document.querySelector('#ar-scene div p').innerHTML = 
-                `👁️ Visual: ${randomScene.desc}`;
-        }
-        
-        function nextFallbackScene() {
-            const scenes = [
-                'Amphitheatre gladiator preparation area',
-                'Roman bath house (thermae)',
-                'Garden peristyle with fountain',
-                'Bakery with stone ovens'
-            ];
-            const randomScene = scenes[Math.floor(Math.random() * scenes.length)];
-            document.querySelector('#ar-scene div p').innerHTML = 
-                `🖼️ Viewing: ${randomScene}`;
-        }
-        
-        function trackMetrics() {
-            const loadTime = performance.now() - startTime;
-            
-            const metrics = {
-                ...browserCapabilities,
-                load_time_ms: Math.round(loadTime),
-                ar_session_duration: sessionStarted ? Math.round(performance.now() - startTime) : 0,
-                timestamp: new Date().toISOString()
+            // Get environmental data
+            const environmentalData = {
+                temperature: 20 + Math.random() * 15, // 20-35°C
+                humidity: 40 + Math.random() * 40,    // 40-80%
+                time_of_day: new Date().getHours()
             };
             
-            // Send metrics to backend
-            fetch('/track', {
+            // Call quantum scene generation
+            fetch('/generate-scene', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(metrics)
-            }).catch(function(error) {
-                console.log('Metrics tracking failed:', error);
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    environmental_data: environmentalData,
+                    user_preferences: {
+                        historical_accuracy: 'high',
+                        sensory_intensity: 0.8
+                    }
+                })
+            })
+            .then(response => response.json())
+            .then(scene => {
+                currentScene = scene;
+                displayScene(scene);
+                document.getElementById('start-ar').disabled = false;
+            })
+            .catch(error => {
+                console.error('Scene generation error:', error);
+                sceneContent.innerHTML = '❌ Scene generation failed - using fallback';
             });
         }
         
-        // Initialize on page load
-        window.addEventListener('load', function() {
-            detectCapabilities();
+        function displayScene(scene) {
+            const sceneContent = document.getElementById('scene-content');
+            const quantumSig = document.getElementById('quantum-signature');
             
-            // Track page load metrics after 1 second
-            setTimeout(trackMetrics, 1000);
-        });
+            sceneContent.innerHTML = `
+                <h3>🏛️ ${scene.location}</h3>
+                <p><strong>👁️ Visual:</strong> ${scene.visual}</p>
+                <p><strong>🔊 Sound:</strong> ${scene.sound}</p>
+                <p><strong>👃 Scent:</strong> ${scene.smell}</p>
+                <p><strong>📚 Context:</strong> ${scene.historical_context}</p>
+                <p><strong>🕐 Time:</strong> ${scene.time_of_day}</p>
+                ${scene.environmental_note ? '<p><strong>🌤️ Environment:</strong> ' + scene.environmental_note + '</p>' : ''}
+            `;
+            
+            quantumSig.innerHTML = `
+                ⚛️ Quantum State: |${scene.quantum_signature}>
+                ${scene.generation_timestamp ? '<br>Generated: ' + new Date(scene.generation_timestamp).toLocaleTimeString() : ''}
+            `;
+        }
         
-        // Track session end
-        window.addEventListener('beforeunload', function() {
-            if (sessionStarted) {
-                trackMetrics();
+        function startARExperience() {
+            if (!currentScene) {
+                alert('Please generate a quantum scene first!');
+                return;
             }
-        });
+            
+            const arButton = document.getElementById('start-ar');
+            arButton.innerHTML = '🔄 Loading AR...';
+            arButton.disabled = true;
+            
+            // Track AR session start
+            const sessionData = {
+                session_type: 'hybrid',
+                quantum_used: quantumAvailable,
+                ar_loaded: arCapable,
+                fallback_used: !arCapable,
+                quantum_state: currentScene.quantum_signature,
+                scene_location: currentScene.location,
+                environmental_temp: currentScene.environmental_data?.temperature || 25,
+                load_time_ms: performance.now() - sessionStartTime
+            };
+            
+            // Simulate AR initialization
+            setTimeout(() => {
+                if (arCapable) {
+                    // Real WebXR would initialize here
+                    alert(`🏛️ AR Experience Active!\n\n` +
+                          `Location: ${currentScene.location}\n` +
+                          `Quantum State: |${currentScene.quantum_signature}>\n\n` +
+                          `Look around to explore ancient Pompeii!`);
+                } else {
+                    // Fallback 2D experience
+                    alert(`📖 2D Experience Active!\n\n` +
+                          `Exploring: ${currentScene.location}\n` +
+                          `${currentScene.visual}\n\n` +
+                          `Swipe to explore different angles!`);
+                }
+                
+                arButton.innerHTML = arCapable ? '🏛️ AR Active' : '📖 2D Active';
+                
+                // Track successful AR start
+                sessionData.ar_session_duration = 1000; // Simulate session duration
+                trackUnifiedMetrics(sessionData);
+                
+            }, 2000);
+        }
+        
+        function trackInitialMetrics() {
+            const metrics = {
+                session_type: 'page_load',
+                device: /iPhone|iPad|iPod/.test(navigator.userAgent) ? 'iOS' : 
+                        /Android/.test(navigator.userAgent) ? 'Android' : 'Desktop',
+                browser: getBrowserName(),
+                quantum_used: quantumAvailable,
+                ar_loaded: false,
+                fallback_used: false,
+                load_time_ms: performance.now() - sessionStartTime,
+                user_interactions: 0
+            };
+            
+            trackUnifiedMetrics(metrics);
+        }
+        
+        function trackUnifiedMetrics(metrics) {
+            fetch('/track-unified', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(metrics)
+            }).catch(error => console.log('Metrics tracking failed:', error));
+        }
+        
+        function getBrowserName() {
+            const ua = navigator.userAgent;
+            if (ua.indexOf('Chrome') > -1) return 'Chrome';
+            if (ua.indexOf('Safari') > -1 && ua.indexOf('Chrome') === -1) return 'Safari';
+            if (ua.indexOf('Firefox') > -1) return 'Firefox';
+            if (ua.indexOf('Edge') > -1) return 'Edge';
+            return 'Unknown';
+        }
     </script>
 </body>
 </html>
 """
 
-# Flask Routes
+# Flask Routes - Unified System
 @app.route('/')
-def landing_page():
-    """WebAR Landing Page - Entry point from QR code"""
-    return render_template_string(LANDING_PAGE_TEMPLATE)
+def unified_landing_page():
+    """Unified landing page with both quantum and WebAR capabilities"""
+    return render_template_string(UNIFIED_LANDING_PAGE)
 
-@app.route('/track', methods=['POST'])
-def track():
-    """
-    FIXED: Complete tracking endpoint with proper error handling
-    Accepts JSON payload with user metrics and device information
-    """
-    client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    
-    # Rate limiting check
-    if not check_rate_limit(client_ip):
-        return jsonify({
-            'status': 'error', 
-            'message': 'Rate limit exceeded'
-        }), 429
-    
+@app.route('/quantum-status')
+def quantum_status():
+    """Check quantum computing availability"""
+    return jsonify({
+        'available': QISKIT_AVAILABLE,
+        'backend': 'qasm_simulator' if QISKIT_AVAILABLE else 'classical_fallback',
+        'circuits_generated': len(quantum_hippie.scene_history),
+        'last_generation': quantum_hippie.scene_history[-1]['generation_timestamp'] if quantum_hippie.scene_history else None
+    })
+
+@app.route('/generate-scene', methods=['POST'])
+def generate_scene():
+    """Generate quantum Pompeii scene"""
     try:
-        if not request.json:
-            return jsonify({
-                'status': 'error',
-                'message': 'No JSON data provided'
-            }), 400
+        data = request.json or {}
+        env_data = data.get('environmental_data', {})
         
-        payload = request.json
+        temperature = env_data.get('temperature', 25.0)
+        humidity = env_data.get('humidity', 60.0)
+        user_location = env_data.get('user_location')
         
-        # Add request metadata
-        enhanced_payload = payload.copy()
-        enhanced_payload.update({
-            'client_ip': hashlib.md5(client_ip.encode()).hexdigest()[:8],  # Anonymized IP
-            'user_agent': request.headers.get('User-Agent', ''),
-            'referer': request.headers.get('Referer', ''),
+        # Generate scene using quantum or classical methods
+        scene = quantum_hippie.generate_quantum_scene(temperature, humidity, user_location)
+        
+        # Add AR assets information
+        ar_assets = quantum_hippie.get_ar_assets_for_scene(scene)
+        scene['ar_assets'] = ar_assets
+        
+        return jsonify({
+            'success': True,
+            'quantum_method': QISKIT_AVAILABLE,
+            **scene
         })
         
-        # Save to feedback system
-        success = feedback_system.save_metric(enhanced_payload)
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'fallback_scene': quantum_hippie._fallback_scene(25.0)
+        }), 500
+
+@app.route('/track-unified', methods=['POST'])
+def track_unified():
+    """Unified tracking endpoint for both quantum and WebAR metrics"""
+    client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    
+    if not check_rate_limit(client_ip):
+        return jsonify({'error': 'Rate limit exceeded'}), 429
+    
+    try:
+        metric_data = request.json or {}
+        
+        # Add request metadata
+        metric_data.update({
+            'client_ip_hash': hashlib.md5(client_ip.encode()).hexdigest()[:8],
+            'user_agent': request.headers.get('User-Agent', ''),
+            'timestamp': datetime.now().isoformat()
+        })
+        
+        success = feedback_system.save_unified_metric(metric_data)
         
         if success:
             return jsonify({
                 'status': 'success',
-                'message': 'Metrics tracked successfully',
-                'resonant_feedback': 'Data processed for experience optimization'
+                'message': 'Unified metrics tracked successfully',
+                'qeit_resonance': 'Analyzing for experience optimization'
             })
         else:
-            return jsonify({
-                'status': 'error',
-                'message': 'Failed to save metrics'
-            }), 500
+            return jsonify({'status': 'error', 'message': 'Failed to save metrics'}), 500
             
     except Exception as e:
-        logger.error(f"Tracking error: {e}")
-        return jsonify({
-            'status': 'error',
-            'message': 'Internal server error'
-        }), 500
+        logging.error(f"Unified tracking error: {e}")
+        return jsonify({'status': 'error', 'message': 'Tracking failed'}), 500
 
-@app.route('/capabilities')
-def check_capabilities():
-    """Browser capability detection endpoint"""
-    user_agent = request.headers.get('User-Agent', '')
-    capabilities = detect_browser_capabilities(user_agent)
-    return jsonify(capabilities)
-
-@app.route('/metrics')
-def get_metrics():
-    """Dashboard endpoint for viewing metrics (admin only)"""
+@app.route('/metrics-dashboard')
+def unified_metrics_dashboard():
+    """Comprehensive dashboard for both quantum and WebAR metrics"""
     try:
         if os.path.exists(METRICS_FILE):
             with open(METRICS_FILE, "r", encoding='utf-8') as f:
-                metrics = json.load(f)
+                all_metrics = json.load(f)
         else:
-            metrics = []
+            all_metrics = []
         
-        # Calculate basic statistics
-        if metrics:
-            recent_metrics = metrics[-100:]  # Last 100 sessions
-            stats = {
-                'total_sessions': len(metrics),
-                'recent_sessions': len(recent_metrics),
-                'ar_success_rate': sum(1 for m in recent_metrics if m.get('ar_loaded', False)) / len(recent_metrics),
-                'avg_load_time': sum(m.get('load_time_ms', 0) for m in recent_metrics) / len(recent_metrics),
-                'top_devices': {},
-                'top_browsers': {}
+        if not all_metrics:
+            return jsonify({
+                'status': 'success',
+                'message': 'No metrics available yet',
+                'statistics': {'total_sessions': 0}
+            })
+        
+        recent_metrics = all_metrics[-100:]  # Last 100 sessions
+        
+        # Calculate comprehensive statistics
+        stats = {
+            'total_sessions': len(all_metrics),
+            'recent_sessions': len(recent_metrics),
+            'quantum_statistics': {
+                'quantum_sessions': sum(1 for m in recent_metrics if m.get('quantum_used', False)),
+                'quantum_usage_rate': sum(1 for m in recent_metrics if m.get('quantum_used', False)) / len(recent_metrics) if recent_metrics else 0,
+                'top_quantum_states': {},
+                'avg_generation_time': 0
+            },
+            'ar_statistics': {
+                'ar_sessions': sum(1 for m in recent_metrics if m.get('ar_loaded', False)),
+                'ar_success_rate': sum(1 for m in recent_metrics if m.get('ar_loaded', False)) / len(recent_metrics) if recent_metrics else 0,
+                'fallback_usage': sum(1 for m in recent_metrics if m.get('fallback_used', False)) / len(recent_metrics) if recent_metrics else 0,
+                'avg_load_time': sum(m.get('load_time_ms', 0) for m in recent_metrics) / len(recent_metrics) if recent_metrics else 0
+            },
+            'device_breakdown': {},
+            'browser_breakdown': {},
+            'scene_popularity': {},
+            'performance_metrics': {
+                'sessions_over_5s': sum(1 for m in recent_metrics if m.get('load_time_ms', 0) > 5000),
+                'avg_session_duration': sum(m.get('ar_session_duration', 0) for m in recent_metrics) / len(recent_metrics) if recent_metrics else 0
             }
+        }
+        
+        # Analyze quantum states
+        for metric in recent_metrics:
+            if metric.get('quantum_state'):
+                state = metric['quantum_state']
+                stats['quantum_statistics']['top_quantum_states'][state] = \
+                    stats['quantum_statistics']['top_quantum_states'].get(state, 0) + 1
+        
+        # Device and browser breakdown
+        for metric in recent_metrics:
+            device = metric.get('device', 'unknown')
+            browser = metric.get('browser', 'unknown')
+            scene = metric.get('scene_location', 'unknown')
             
-            # Device/browser statistics
-            for metric in recent_metrics:
-                device = metric.get('device', 'unknown')
-                browser = metric.get('browser', 'unknown')
-                stats['top_devices'][device] = stats['top_devices'].get(device, 0) + 1
-                stats['top_browsers'][browser] = stats['top_browsers'].get(browser, 0) + 1
-        else:
-            stats = {'total_sessions': 0, 'message': 'No data available'}
+            stats['device_breakdown'][device] = stats['device_breakdown'].get(device, 0) + 1
+            stats['browser_breakdown'][browser] = stats['browser_breakdown'].get(browser, 0) + 1
+            stats['scene_popularity'][scene] = stats['scene_popularity'].get(scene, 0) + 1
         
         return jsonify({
             'status': 'success',
             'statistics': stats,
-            'recent_metrics': metrics[-10:] if metrics else []  # Last 10 for preview
+            'recent_sample': recent_metrics[-5:],  # Last 5 sessions for preview
+            'data_collection_period': f'Last {len(recent_metrics)} sessions'
         })
         
     except Exception as e:
-        logger.error(f"Metrics retrieval error: {e}")
+        logging.error(f"Dashboard error: {e}")
         return jsonify({
             'status': 'error',
-            'message': 'Failed to retrieve metrics'
+            'message': 'Failed to load dashboard data'
         }), 500
 
 @app.route('/recommendations')
-def get_recommendations():
-    """Get QEIT resonant feedback recommendations"""
+def unified_recommendations():
+    """Get QEIT resonant feedback recommendations for unified system"""
     try:
-        rec_file = "recommendations.json"
+        rec_file = "unified_recommendations.json"
         if os.path.exists(rec_file):
             with open(rec_file, "r", encoding='utf-8') as f:
                 recommendations = json.load(f)
+            
+            latest = recommendations[-1] if recommendations else None
+            
             return jsonify({
                 'status': 'success',
-                'latest_recommendations': recommendations[-1] if recommendations else None,
-                'recommendation_history': recommendations[-5:] if recommendations else []
+                'latest_analysis': latest,
+                'recommendation_count': len(recommendations),
+                'history': recommendations[-3:] if len(recommendations) > 3 else recommendations,
+                'qeit_principle': 'Resonant Interactive Feedback Active'
             })
         else:
             return jsonify({
                 'status': 'success',
-                'message': 'No recommendations available yet'
+                'message': 'No recommendations generated yet - need more usage data',
+                'minimum_sessions_needed': 20
             })
+            
     except Exception as e:
-        logger.error(f"Recommendations error: {e}")
+        logging.error(f"Recommendations error: {e}")
         return jsonify({
             'status': 'error',
             'message': 'Failed to retrieve recommendations'
         }), 500
 
-# Health check endpoint
+@app.route('/ar-assets/<asset_type>/<filename>')
+def serve_ar_assets(asset_type, filename):
+    """Serve AR assets for WebAR rendering"""
+    # In production, this should serve from CDN or static file server
+    # For demo, return asset metadata
+    asset_info = {
+        'asset_type': asset_type,
+        'filename': filename,
+        'url': f'/static/ar_assets/{asset_type}/{filename}',
+        'status': 'available',
+        'optimized_for': ['mobile', 'webxr'],
+        'file_size': '~2MB',  # Estimated
+        'format': filename.split('.')[-1].upper()
+    }
+    
+    return jsonify(asset_info)
+
 @app.route('/health')
-def health_check():
-    """System health check"""
-    return jsonify({
+def unified_health_check():
+    """Comprehensive system health check"""
+    health_status = {
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'version': '1.0.0',
-        'qeit_principle': 'Resonant Interactive Feedback Active'
-    })
+        'system_info': {
+            'quantum_engine': 'operational' if QISKIT_AVAILABLE else 'classical_fallback',
+            'webar_integration': 'active',
+            'feedback_system': 'recording',
+            'rate_limiting': 'enabled'
+        },
+        'performance': {
+            'total_scenes_generated': len(quantum_hippie.scene_history),
+            'metrics_file_size': os.path.getsize(METRICS_FILE) if os.path.exists(METRICS_FILE) else 0,
+            'uptime_indicator': 'active'
+        },
+        'qeit_principle': 'Resonant Interactive Feedback System Operational'
+    }
+    
+    return jsonify(health_status)
+
+@app.route('/demo')
+def run_unified_demo():
+    """Complete unified demo endpoint"""
+    print("\n🌿⚛️ UNIFIED QUANTUMHIPPIE + WEBAR DEMO")
+    print("=" * 50)
+    
+    try:
+        # Generate quantum scene
+        demo_scene = quantum_hippie.generate_quantum_scene(
+            temperature=random.uniform(22, 32),
+            humidity=random.uniform(50, 75)
+        )
+        
+        # Get AR assets
+        ar_assets = quantum_hippie.get_ar_assets_for_scene(demo_scene)
+        
+        # Simulate metrics
+        demo_metrics = {
+            'session_type': 'demo',
+            'device': 'Demo Device',
+            'browser': 'Demo Browser',
+            'quantum_used': QISKIT_AVAILABLE,
+            'ar_loaded': True,
+            'quantum_state': demo_scene.get('quantum_signature', 'unknown'),
+            'scene_location': demo_scene.get('location', 'Demo Location'),
+            'environmental_temp': demo_scene.get('environmental_data', {}).get('temperature', 25),
+            'load_time_ms': random.randint(1000, 3000),
+            'ar_session_duration': random.randint(30000, 120000)
+        }
+        
+        # Save demo metrics
+        feedback_system.save_unified_metric(demo_metrics)
+        
+        demo_result = {
+            'status': 'demo_complete',
+            'quantum_scene': demo_scene,
+            'ar_assets': ar_assets,
+            'metrics_recorded': demo_metrics,
+            'system_status': {
+                'quantum_available': QISKIT_AVAILABLE,
+                'total_scenes_generated': len(quantum_hippie.scene_history),
+                'demo_timestamp': datetime.now().isoformat()
+            }
+        }
+        
+        print(f"✅ Demo completed successfully!")
+        print(f"📍 Generated: {demo_scene.get('location', 'Unknown')}")
+        print(f"⚛️ Quantum State: |{demo_scene.get('quantum_signature', '??')}⟩")
+        print(f"🔧 Quantum Engine: {'Active' if QISKIT_AVAILABLE else 'Classical Fallback'}")
+        
+        return jsonify(demo_result)
+        
+    except Exception as e:
+        error_result = {
+            'status': 'demo_error',
+            'error': str(e),
+            'fallback_active': True
+        }
+        print(f"⚠️ Demo error: {e}")
+        return jsonify(error_result), 500
+
+# Additional utility routes
+@app.route('/api-docs')
+def api_documentation():
+    """API documentation for the unified system"""
+    docs = {
+        'unified_quantumhippie_api': {
+            'version': '1.0.0',
+            'description': 'Unified QuantumHippie AR Pompeii + WebAR QR Integration',
+            'endpoints': {
+                'GET /': 'Unified landing page with quantum and AR capabilities',
+                'GET /quantum-status': 'Check quantum computing availability',
+                'POST /generate-scene': 'Generate quantum Pompeii scene',
+                'POST /track-unified': 'Track unified metrics (quantum + WebAR)',
+                'GET /metrics-dashboard': 'Comprehensive metrics dashboard',
+                'GET /recommendations': 'QEIT resonant feedback recommendations',
+                'GET /ar-assets/<type>/<filename>': 'Serve AR assets',
+                'GET /health': 'System health check',
+                'GET /demo': 'Run complete system demo',
+                'GET /api-docs': 'This documentation'
+            },
+            'qeit_principle': 'Resonant Interactive Feedback',
+            'features': [
+                'Quantum scene generation with Qiskit',
+                'WebAR integration with fallback support',
+                'Real-time metrics tracking and analysis',
+                'QEIT resonant feedback system',
+                'Historical accuracy with AR visualization',
+                'Cross-platform compatibility'
+            ]
+        }
+    }
+    return jsonify(docs)
 
 if __name__ == '__main__':
-    # Create necessary directories and files
-    os.makedirs('static', exist_ok=True)
-    os.makedirs('templates', exist_ok=True)
+    # Setup logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
     
-    print("🌿⚛️ WebAR QR Integration Server Starting...")
-    print("=" * 50)
+    # Create necessary directories
+    os.makedirs('static/ar_assets/3d_models', exist_ok=True)
+    os.makedirs('static/ar_assets/audio', exist_ok=True)
+    os.makedirs('static/ar_assets/textures', exist_ok=True)
+    os.makedirs('data', exist_ok=True)
+    
+    print("🌿⚛️ UNIFIED QUANTUMHIPPIE + WEBAR SYSTEM")
+    print("=" * 60)
+    print("🚀 Starting unified server...")
+    print(f"⚛️ Quantum Engine: {'✅ Qiskit Available' if QISKIT_AVAILABLE else '⚠️ Classical Fallback'}")
+    print("📱 WebAR Integration: ✅ Active")
+    print("🔄 QEIT Feedback System: ✅ Recording")
+    print()
+    print("🌐 ACCESS POINTS:")
     print("📱 Landing Page: http://localhost:5000/")
-    print("📊 Metrics Dashboard: http://localhost:5000/metrics")
+    print("📊 Metrics: http://localhost:5000/metrics-dashboard") 
     print("💡 Recommendations: http://localhost:5000/recommendations")
-    print("🏥 Health Check: http://localhost:5000/health")
-    print("=" * 50)
+    print("🏥 Health: http://localhost:5000/health")
+    print("🎮 Demo: http://localhost:5000/demo")
+    print("📚 API Docs: http://localhost:5000/api-docs")
+    print("=" * 60)
+    print("🙏 Ready to explore quantum-powered ancient Pompeii!")
     
-    # Run the Flask application
+    # Run the unified application
     app.run(debug=True, host='0.0.0.0', port=5000)
