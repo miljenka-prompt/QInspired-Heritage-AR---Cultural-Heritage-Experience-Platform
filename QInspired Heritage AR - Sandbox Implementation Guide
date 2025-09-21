@@ -3,11 +3,9 @@
 QInspired Heritage AR - Sandbox Implementation Guide
 QInspired Heritage AR - Vodič za Sandbox Implementaciju
 
----
 
-## 📖 README / PROČITAJ ME
 
-### 🇭🇷 Hrvatski
+🇭🇷 Hrvatski
 **QInspired Heritage AR** je sandbox platforma za augmentiranu stvarnost (ARWeb) koja koristi 8th Wall za stvaranje povijesnih scena, fokusirajući se na testiranje. Ova verzija je dizajnirana za eksperimentiranje s WebAR-om, uz privremene kvantno-inspirirane simulacije na klasičnom hardveru.
 
 **Ključne funkcionalnosti:**
@@ -26,7 +24,7 @@ docker-compose up -d
 npm test
 ```
 
-### 🇬🇧 English
+ 🇬🇧 English
 **QInspired Heritage AR** is a sandbox augmented reality (ARWeb) platform using 8th Wall to create historical scenes, designed for testing. This version focuses on WebAR experimentation with temporary quantum-inspired simulations on classical hardware.
 
 **Key Features:**
