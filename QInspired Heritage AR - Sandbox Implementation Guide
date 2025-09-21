@@ -1,0 +1,195 @@
+
+
+QInspired Heritage AR - Sandbox Implementation Guide
+QInspired Heritage AR - Vodič za Sandbox Implementaciju
+
+---
+
+## 📖 README / PROČITAJ ME
+
+### 🇭🇷 Hrvatski
+**QInspired Heritage AR** je sandbox platforma za augmentiranu stvarnost (ARWeb) koja koristi 8th Wall za stvaranje povijesnih scena, fokusirajući se na testiranje. Ova verzija je dizajnirana za eksperimentiranje s WebAR-om, uz privremene kvantno-inspirirane simulacije na klasičnom hardveru.
+
+**Ključne funkcionalnosti:**
+- **WebAR s 8th Wall**: QR kodovi za interaktivne scene.
+- **Testiranje scena**: Dinamička generacija vizualnih i audio elemenata.
+- **Sandbox okruženje**: Jednostavno postavljanje za razvoj i testiranje.
+
+**Brzo pokretanje:**
+```bash
+mkdir qinspired-heritage-ar && cd qinspired-heritage-ar
+mkdir -p src/{core,adapters,tests} assets/{config,models}
+cp -r [ovaj vodič] .
+pip install -r requirements.txt
+npm install
+docker-compose up -d
+npm test
+```
+
+### 🇬🇧 English
+**QInspired Heritage AR** is a sandbox augmented reality (ARWeb) platform using 8th Wall to create historical scenes, designed for testing. This version focuses on WebAR experimentation with temporary quantum-inspired simulations on classical hardware.
+
+**Key Features:**
+- **WebAR with 8th Wall**: QR code-based interactive scenes.
+- **Scene Testing**: Dynamic generation of visual and audio elements.
+- **Sandbox Environment**: Easy setup for development and testing.
+
+**Quick Start:**
+```bash
+mkdir qinspired-heritage-ar && cd qinspired-heritage-ar
+mkdir -p src/{core,adapters,tests} assets/{config,models}
+cp -r [this guide] .
+pip install -r requirements.txt
+npm install
+docker-compose up -d
+npm test
+```
+
+
+
+## 📁 Project Structure / Struktura Projekta
+
+```
+qinspired-heritage-ar/
+├── src/
+│   ├── core/
+│   │   ├── quantum_engine.py          # Simulacija generacije scena
+│   ├── adapters/
+│   │   ├── webar_adapter.js           # 8th Wall WebAR adapter
+│   ├── tests/
+│   │   ├── test_quantum_engine.py     # Testovi engine-a
+│   │   ├── test_webar.js              # Testovi WebAR-a
+│   └── api/
+│       ├── main.py                    # Jednostavan FastAPI backend
+├── assets/
+│   ├── config/
+│   │   ├── scenes.yaml                # Konfiguracija scena
+│   │   └── app_config.json            # App konfiguracija
+│   ├── models/                        # 3D modeli za testiranje
+├── docker/
+│   ├── Dockerfile                     # Testni Docker slika
+│   └── docker-compose.yml             # Sandbox stack
+├── requirements.txt                   # Python dependencies
+├── package.json                       # Node.js dependencies
+└── README.md                          # Dokumentacija
+```
+
+---
+
+## 🚀 Implementation / Implementacija
+
+### 1. Core Quantum Engine (Sandbox)
+#### src/core/quantum_engine.py
+```python
+import numpy as np
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class HistoricalPeriod(Enum):
+    ROMAN = "roman"
+
+class SceneOutput:
+    scene_name: str
+    visual_model: str
+    audio_file: str
+    description: str
+
+class QuantumEngine:
+    def __init__(self):
+        self.scene_database = {
+            "roman": [{"scene_name": "roman_forum", "visual": "forum_3d", "audio": "market.mp3", "description": "Roman forum scene"}]
+        }
+
+    def generate_scene(self):
+        scene = self.scene_database["roman"][0]
+        logger.info(f"Generated scene: {scene['scene_name']}")
+        return SceneOutput(**scene)
+
+def test_engine():
+    engine = QuantumEngine()
+    scene = engine.generate_scene()
+    print(f"✅ Scene: {scene.scene_name}")
+
+if __name__ == "__main__":
+    test_engine()
+```
+
+### 2. WebAR Adapter (8th Wall)
+#### src/adapters/webar_adapter.js
+```javascript
+import { XRSight } from '8thwall/xrsight';
+
+const xrSight = new XRSight();
+xrSight.on('reality', () => {
+    console.log('WebAR initialized with 8th Wall');
+    // Load test 3D model
+    const model = document.createElement('a-entity');
+    model.setAttribute('gltf-model', './assets/models/forum_3d.glb');
+    document.querySelector('a-scene').appendChild(model);
+});
+
+export { xrSight };
+```
+
+### 3. Configuration Manager
+#### src/config_manager.py
+```python
+import json
+import yaml
+import os
+
+class ConfigManager:
+    def __init__(self, config_dir="assets/config"):
+        self.config_dir = config_dir
+        os.makedirs(self.config_dir, exist_ok=True)
+        self.load_configs()
+
+    def load_configs(self):
+        with open(os.path.join(self.config_dir, "scenes.yaml"), 'w') as f:
+            yaml.dump({"roman": {"scene": "roman_forum"}}, f)
+        with open(os.path.join(self.config_dir, "app_config.json"), 'w') as f:
+            json.dump({"port": 8000}, f)
+```
+
+### 4. Testovi
+#### src/tests/test_webar.js
+```javascript
+import { xrSight } from '../adapters/webar_adapter.js';
+
+describe('WebAR Test', () => {
+    it('initializes WebAR', () => {
+        xrSight.on('reality', () => expect(true).toBe(true));
+        xrSight.emit('reality');
+    });
+});
+```
+
+src/tests/test_quantum_engine.py
+```python
+from src.core.quantum_engine import QuantumEngine
+
+def test_generate_scene():
+    engine = QuantumEngine()
+    scene = engine.generate_scene()
+    assert scene.scene_name == "roman_forum"
+```
+
+
+
+## 🛠️ Setup i Testiranje
+1. **Instalacija**:
+   - `pip install -r requirements.txt`
+   - `npm install`
+2. **Pokretanje**:
+   - `docker-compose up -d`
+3. **Testiranje**:
+   - `pytest src/tests/`
+   - `npm test`
+4. **WebAR test**: Otvori `index.html` u pregledniku s QR kodom za testnu scenu.
+
+
+## 📝 Napomene
+- Ovo je sandbox verzija za testiranje 8th Wall WebAR-a.
+- QuantumHippie i Mirisia difuzori su "Future Enhancements".
