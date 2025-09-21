@@ -1,0 +1,670 @@
+# QInspired Heritage AR - Complete Implementation Guide
+## QInspired Heritage AR - Kompletan Implementacijski Vodič
+
+---
+
+## 📖 README / PROČITAJ ME
+
+### 🇭🇷 Hrvatski / Croatian
+
+**QInspired Heritage AR** je napredna platforma za augmentiranu stvarnost koja koristi kvantno-inspirirane algoritme za dinamičko kreiranje povijesnih scena. Sistem kombinira AR tehnologiju sa probabilističkim modelima za stvaranje autentičnih multisenzornih iskustava koja služe edukaciji, turizmu i očuvanju kulturnog nasleđa.
+
+**Ključne funkcionalnosti:**
+- **Kvantno-inspirirani algoritmi**: Probabilistička generacija scena na klasičnom hardware-u
+- **Multisenzorno iskustvo**: Kombinacija vizuelnih, auditivnih i olfaktivnih elemenata
+- **WebAR podrška**: Instant pristup preko web preglednika
+- **Native AR aplikacije**: Potpuna funkcionalnost na iOS/Android uređajima
+- **Scalable arhitektura**: Microservices pristup sa Docker/Kubernetes podrškom
+
+**Brzo pokretanje:**
+```bash
+# 1. Kloniraj i postavi strukturu
+mkdir qinspired-heritage-ar && cd qinspired-heritage-ar
+mkdir -p src/{core,data,services,adapters,utils,tests}
+
+# 2. Kopiraj kod iz ovog vodiča u odgovarajuće datoteke
+
+# 3. Instaliraj dependencies
+pip install -r requirements.txt
+npm install
+
+# 4. Pokreni development stack
+docker-compose up -d
+
+# 5. Testiraj
+pytest src/tests/
+npm test
+```
+
+### 🇬🇧 English
+
+**QInspired Heritage AR** is an advanced augmented reality platform that uses quantum-inspired algorithms to dynamically create historical scenes. The system combines AR technology with probabilistic models to generate authentic multisensory experiences for education, tourism, and cultural heritage preservation.
+
+**Key Features:**
+- **Quantum-inspired algorithms**: Probabilistic scene generation on classical hardware
+- **Multisensory experience**: Combination of visual, auditory, and olfactory elements
+- **WebAR support**: Instant access through web browsers
+- **Native AR apps**: Full functionality on iOS/Android devices
+- **Scalable architecture**: Microservices approach with Docker/Kubernetes support
+
+**Quick Start:**
+```bash
+# 1. Clone and setup structure
+mkdir qinspired-heritage-ar && cd qinspired-heritage-ar
+mkdir -p src/{core,data,services,adapters,utils,tests}
+
+# 2. Copy code from this guide into appropriate files
+
+# 3. Install dependencies
+pip install -r requirements.txt
+npm install
+
+# 4. Run development stack
+docker-compose up -d
+
+# 5. Test
+pytest src/tests/
+npm test
+```
+
+---
+
+## 📁 Project Structure / Struktura Projekta
+
+```
+qinspired-heritage-ar/
+├── src/
+│   ├── core/
+│   │   ├── quantum_engine.py          # Glavni kvantno-inspirirani engine
+│   │   └── scene_generator.py         # Generator scena
+│   ├── data/
+│   │   ├── historical_database.py     # Baza povijesnih podataka
+│   │   └── scene_repository.py        # Repository za scene
+│   ├── services/
+│   │   ├── audio_service.py           # Audio servisi
+│   │   ├── visual_service.py          # Vizualni servisi
+│   │   └── olfactory_service.py       # Olfactory servisi
+│   ├── adapters/
+│   │   ├── webar_adapter.js           # WebAR adapter
+│   │   └── unity_adapter.cs           # Unity AR adapter
+│   ├── utils/
+│   │   ├── config_manager.py          # Upravljanje konfiguracije
+│   │   ├── performance_monitor.py     # Monitoring performansi
+│   │   └── validators.py              # Validatori
+│   ├── tests/
+│   │   ├── test_quantum_engine.py     # Testovi za engine
+│   │   ├── test_webar.js              # WebAR testovi
+│   │   └── integration_tests.py       # Integracijski testovi
+│   └── api/
+│       ├── main.py                    # FastAPI backend
+│       ├── models.py                  # Pydantic modeli
+│       └── auth.py                    # Autentifikacija
+├── assets/
+│   ├── config/
+│   │   ├── scenes.yaml                # Konfiguracija scena
+│   │   └── app_config.json            # App konfiguracija
+│   ├── audio/                         # Audio datoteke
+│   ├── models/                        # 3D modeli
+│   └── textures/                      # Texture datoteke
+├── docker/
+│   ├── Dockerfile                     # Production Docker slika
+│   └── docker-compose.yml             # Development stack
+├── k8s/                              # Kubernetes manifesti
+├── scripts/                          # Deployment skriptovi
+├── requirements.txt                  # Python dependencies
+├── package.json                      # Node.js dependencies
+└── README.md                         # Projektna dokumentacija
+```
+
+---
+
+## 🚀 Implementation / Implementacija
+
+### 1. Core Quantum Engine
+
+#### src/core/quantum_engine.py
+
+```python
+"""
+Enhanced Quantum-Inspired Heritage Engine
+Poboljšani Kvantno-Inspirirani Heritage Engine
+
+Copy-paste ready implementation with improved architecture
+Implementacija spremna za kopiranje s poboljšanom arhitekturom
+"""
+
+import numpy as np
+import logging
+from typing import Dict, List, Tuple, Optional, Union
+from dataclasses import dataclass
+from enum import Enum
+import asyncio
+from functools import lru_cache
+import time
+import json
+
+# Setup logging / Postavljanje logiranja
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class HistoricalPeriod(Enum):
+    """Historical periods supported by the system / Povijesna razdoblja podržana sustavom"""
+    PALEOLITHIC = "paleolithic"
+    ROMAN = "roman"
+    MEDIEVAL = "medieval"
+    RENAISSANCE = "renaissance"
+
+class LocationType(Enum):
+    """Types of locations / Vrste lokacija"""
+    URBAN = "urban"
+    RURAL = "rural"
+    RELIGIOUS = "religious"
+    ARCHAEOLOGICAL = "archaeological"
+
+@dataclass
+class EnvironmentalParams:
+    """Environmental parameters for scene generation / Ekološki parametri za generaciju scena"""
+    temperature: float
+    historical_period: HistoricalPeriod
+    location_type: LocationType
+    time_of_day: str = "midday"
+    visitor_count: int = 1
+    weather_condition: Optional[str] = None
+    gps_coordinates: Optional[Tuple[float, float]] = None
+
+@dataclass
+class SceneOutput:
+    """Output structure for generated scenes / Izlazna struktura za generirane scene"""
+    scene_name: str
+    audio_file: str
+    visual_model: str
+    olfactory_profile: str
+    description: str
+    confidence_score: float
+    generation_time: float
+    environmental_adaptation: Dict
+
+class QuantumInspiredEngineError(Exception):
+    """Custom exception for quantum engine / Prilagođena iznimka za quantum engine"""
+    pass
+
+class EnhancedQuantumInspiredEngine:
+    """
+    Enhanced quantum-inspired engine with error handling, caching and performance optimizations
+    Poboljšani kvantno-inspirirani engine s rukovanjem greškama, predmemoriranjem i optimizacijama performansi
+    """
+    
+    def __init__(self, num_qubits: int = 4, cache_size: int = 128):
+        self.num_qubits = num_qubits
+        self.cache_size = cache_size
+        self.state_vector = self._initialize_superposition()
+        self.entanglement_matrix = self._create_entanglement_map()
+        self.scene_database = self._load_scene_database()
+        self.fallback_scenes = self._load_fallback_scenes()
+        
+        logger.info(f"Quantum Engine initialized with {num_qubits} qubits")
+        logger.info(f"Quantum Engine inicijaliziran s {num_qubits} qubita")
+    
+    def _initialize_superposition(self) -> np.ndarray:
+        """Create initial superposition state / Kreira početno superpoziciono stanje"""
+        n_states = 2 ** self.num_qubits
+        return np.ones(n_states) / np.sqrt(n_states)
+    
+    def _create_entanglement_map(self) -> np.ndarray:
+        """Create entanglement map between parameters / Kreira mapu entanglement veza između parametara"""
+        return np.random.random((self.num_qubits, self.num_qubits)) * 0.1
+    
+    def _load_scene_database(self) -> Dict:
+        """Load scene database / Učitava bazu scena"""
+        return {
+            HistoricalPeriod.ROMAN: [
+                {
+                    "scene_name": "daily_life_market",
+                    "audio": "roman_market_ambiance.mp3",
+                    "visual": "bustling_forum_3d_animation",
+                    "olfactory": "bread_olive_oil_mixture",
+                    "description": "Busy Roman forum with merchants and citizens",
+                    "description_hr": "Užurbani rimski forum s trgovcima i građanima",
+                    "probability_weight": 0.4,
+                    "temperature_preference": (20, 35),
+                    "time_preference": ["morning", "afternoon"]
+                },
+                {
+                    "scene_name": "villa_leisure",
+                    "audio": "villa_courtyard_water.mp3", 
+                    "visual": "villa_dei_misteri_reconstruction",
+                    "olfactory": "wine_roses_incense",
+                    "description": "Aristocratic Roman villa with feast preparation",
+                    "description_hr": "Aristokratska rimska vila s pripremom gozbe",
+                    "probability_weight": 0.3,
+                    "temperature_preference": (15, 30),
+                    "time_preference": ["afternoon", "evening"]
+                },
+                {
+                    "scene_name": "gladiator_training",
+                    "audio": "gladiator_training_sounds.mp3",
+                    "visual": "ludus_magnus_3d",
+                    "olfactory": "sweat_sand_leather",
+                    "description": "Gladiators training in the ludus magnus",
+                    "description_hr": "Gladijatori na treningu u ludus magnusu",
+                    "probability_weight": 0.3,
+                    "temperature_preference": (25, 40),
+                    "time_preference": ["morning", "afternoon"]
+                }
+            ],
+            HistoricalPeriod.PALEOLITHIC: [
+                {
+                    "scene_name": "neanderthal_camp",
+                    "audio": "prehistoric_forest_sounds.mp3",
+                    "visual": "neanderthal_shelter_animation", 
+                    "olfactory": "wood_smoke_earth",
+                    "description": "Neanderthal family group around fire",
+                    "description_hr": "Neandertalna obitelj oko vatre",
+                    "probability_weight": 0.6,
+                    "temperature_preference": (5, 25),
+                    "time_preference": ["evening", "night"]
+                },
+                {
+                    "scene_name": "hunting_expedition",
+                    "audio": "hunting_forest_ambiance.mp3",
+                    "visual": "paleolithic_hunt_scene",
+                    "olfactory": "pine_animal_tracks_cold",
+                    "description": "Paleolithic hunting expedition in ancient forest",
+                    "description_hr": "Paleolitska lovačka ekspedicija u drevnoj šumi",
+                    "probability_weight": 0.4,
+                    "temperature_preference": (0, 20),
+                    "time_preference": ["dawn", "morning"]
+                }
+            ],
+            HistoricalPeriod.MEDIEVAL: [
+                {
+                    "scene_name": "castle_feast",
+                    "audio": "medieval_feast_hall.mp3",
+                    "visual": "great_hall_3d_scene",
+                    "olfactory": "roasted_meat_ale_smoke",
+                    "description": "Medieval feast in great castle hall",
+                    "description_hr": "Srednjovječna gozba u velikoj dvorani",
+                    "probability_weight": 0.35,
+                    "temperature_preference": (10, 25),
+                    "time_preference": ["evening", "night"]
+                },
+                {
+                    "scene_name": "monastery_scriptorium",
+                    "audio": "monastery_writing_room.mp3",
+                    "visual": "scriptorium_3d_detailed",
+                    "olfactory": "parchment_ink_candles",
+                    "description": "Monks illuminating manuscripts in scriptorium",
+                    "description_hr": "Redovnici iluminiraju rukopise u skriptoriju",
+                    "probability_weight": 0.25,
+                    "temperature_preference": (15, 22),
+                    "time_preference": ["morning", "afternoon"]
+                },
+                {
+                    "scene_name": "market_square",
+                    "audio": "medieval_market_sounds.mp3",
+                    "visual": "medieval_town_square",
+                    "olfactory": "bread_spices_animals",
+                    "description": "Bustling medieval market square",
+                    "description_hr": "Užurbani srednjovjekovni trg",
+                    "probability_weight": 0.4,
+                    "temperature_preference": (5, 30),
+                    "time_preference": ["morning", "afternoon"]
+                }
+            ]
+        }
+    
+    def _load_fallback_scenes(self) -> Dict:
+        """Fallback scene for error cases / Rezervna scena za slučajeve greške"""
+        return {
+            "scene_name": "generic_historical",
+            "audio": "ambient_historical.mp3",
+            "visual": "generic_historical_scene",
+            "olfactory": "neutral_air",
+            "description": "Generic historical atmosphere",
+            "description_hr": "Generička povijesna atmosfera",
+            "confidence_score": 0.5
+        }
+    
+    def validate_parameters(self, params: EnvironmentalParams) -> bool:
+        """Validate input parameters / Validira ulazne parametre"""
+        try:
+            # Temperature validation / Validacija temperature
+            if not -50 <= params.temperature <= 60:
+                raise QuantumInspiredEngineError(
+                    f"Temperature {params.temperature}°C out of realistic range / Temperatura {params.temperature}°C izvan realnog raspona"
+                )
+            
+            # Historical period validation / Validacija povijesnog razdoblja
+            if params.historical_period not in HistoricalPeriod:
+                raise QuantumInspiredEngineError(
+                    f"Invalid historical period / Neispravno povijesno razdoblje: {params.historical_period}"
+                )
+            
+            # Location type validation / Validacija vrste lokacije
+            if params.location_type not in LocationType:
+                raise QuantumInspiredEngineError(
+                    f"Invalid location type / Neispravna vrsta lokacije: {params.location_type}"
+                )
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Parameter validation failed / Validacija parametara neuspješna: {e}")
+            return False
+    
+    @lru_cache(maxsize=128)
+    def _calculate_probability_distribution(self, frozen_params: frozenset) -> np.ndarray:
+        """Cached probability calculation / Predmemorirani izračun vjerojatnosti"""
+        # Convert frozenset back to dict for processing
+        params_dict = dict(frozen_params)
+        
+        # Get available scenes for this period / Dobivanje dostupnih scena za ovo razdoblje
+        period_scenes = self.scene_database.get(
+            HistoricalPeriod(params_dict['historical_period']), []
+        )
+        
+        if not period_scenes:
+            logger.warning(f"No scenes found for period / Nema scena za razdoblje {params_dict['historical_period']}")
+            return np.array([1.0])  # Single fallback scene / Jedna rezervna scena
+        
+        # Calculate quantum-inspired probabilities / Izračun kvantno-inspiriranih vjerojatnosti
+        n_scenes = len(period_scenes)
+        base_weights = np.array([scene['probability_weight'] for scene in period_scenes])
+        
+        # Environmental modulation / Modulacija okoline
+        temp = params_dict['temperature']
+        temp_factor = np.sin(temp * np.pi / 40) * 0.3
+        
+        # Time of day influence / Utjecaj doba dana
+        time_factor = self._get_time_influence(params_dict['time_of_day'], period_scenes)
+        
+        # Apply quantum-inspired interference / Primjena kvantno-inspirirane interferencije
+        interference = np.array([
+            temp_factor * (0.5 + 0.3 * np.sin(i * np.pi / n_scenes)) + time_factor[i]
+            for i in range(n_scenes)
+        ])
+        
+        # Combine base weights with environmental influences / Kombiniranje osnovnih težina s utjecajima okoline
+        final_weights = base_weights + interference
+        
+        # Normalize to valid probability distribution / Normaliziranje u valjanu distribuciju vjerojatnosti
+        final_weights = np.abs(final_weights)
+        return final_weights / np.sum(final_weights)
+    
+    def _get_time_influence(self, time_of_day: str, scenes: List[Dict]) -> np.ndarray:
+        """Calculate time of day influence on scene selection / Izračun utjecaja doba dana na odabir scene"""
+        influences = []
+        for scene in scenes:
+            if time_of_day in scene.get('time_preference', []):
+                influences.append(0.2)  # Boost probability / Povećanje vjerojatnosti
+            else:
+                influences.append(-0.1)  # Slight penalty / Blaga kazna
+        return np.array(influences)
+    
+    def _collapse_to_scenario(self, weights: np.ndarray) -> int:
+        """Quantum measurement simulation - collapse to specific scenario / Simulacija kvantnog mjerenja - kolaps u specifičan scenarij"""
+        if len(weights) == 0:
+            return 0
+        return np.random.choice(len(weights), p=weights)
+    
+    def _calculate_confidence_score(self, selected_idx: int, weights: np.ndarray) -> float:
+        """Calculate confidence score based on probability weight / Izračun rezultata pouzdanosti na temelju težine vjerojatnosti"""
+        if len(weights) == 0:
+            return 0.5
+        return float(weights[selected_idx])
+    
+    async def generate_historical_scene_async(self, params: EnvironmentalParams) -> SceneOutput:
+        """Async scene generation with error handling / Async generacija scena s rukovanjem greškama"""
+        start_time = time.time()
+        
+        try:
+            # Validate parameters / Validacija parametara
+            if not self.validate_parameters(params):
+                logger.warning("Using fallback scene due to validation errors / Koristi se rezervna scena zbog grešaka u validaciji")
+                return self._create_fallback_scene(start_time)
+            
+            # Prepare parameters for caching (must be hashable) / Priprema parametara za predmemoriranje (mora biti hashable)
+            cache_params = frozenset([
+                ('temperature', params.temperature),
+                ('historical_period', params.historical_period.value),
+                ('location_type', params.location_type.value),
+                ('time_of_day', params.time_of_day)
+            ])
+            
+            # Calculate probability distribution (cached) / Izračun distribucije vjerojatnosti (predmemorirano)
+            weights = self._calculate_probability_distribution(cache_params)
+            
+            # Select scenario through quantum measurement simulation / Odabir scenarija kroz simulaciju kvantnog mjerenja
+            selected_idx = self._collapse_to_scenario(weights)
+            
+            # Get scene data / Dobivanje podataka scene
+            period_scenes = self.scene_database.get(params.historical_period, [])
+            if not period_scenes or selected_idx >= len(period_scenes):
+                return self._create_fallback_scene(start_time)
+            
+            selected_scene = period_scenes[selected_idx]
+            
+            # Calculate confidence and generation time / Izračun pouzdanosti i vremena generacije
+            confidence = self._calculate_confidence_score(selected_idx, weights)
+            generation_time = time.time() - start_time
+            
+            # Create environmental adaptations / Kreiranje prilagodbi okoline
+            adaptations = self._create_environmental_adaptations(params)
+            
+            # Build scene output / Izgradnja izlaza scene
+            scene_output = SceneOutput(
+                scene_name=selected_scene['scene_name'],
+                audio_file=selected_scene['audio'],
+                visual_model=selected_scene['visual'],
+                olfactory_profile=selected_scene['olfactory'],
+                description=selected_scene['description'],
+                confidence_score=confidence,
+                generation_time=generation_time,
+                environmental_adaptation=adaptations
+            )
+            
+            logger.info(f"Generated scene '{scene_output.scene_name}' in {generation_time:.3f}s with confidence {confidence:.2f}")
+            logger.info(f"Generirana scena '{scene_output.scene_name}' u {generation_time:.3f}s s pouzdanošću {confidence:.2f}")
+            
+            return scene_output
+            
+        except Exception as e:
+            logger.error(f"Scene generation failed / Generacija scene neuspješna: {e}")
+            return self._create_fallback_scene(start_time)
+    
+    def generate_historical_scene(self, params: EnvironmentalParams) -> SceneOutput:
+        """Synchronous wrapper for async scene generation / Sinkroni wrapper za async generaciju scena"""
+        return asyncio.run(self.generate_historical_scene_async(params))
+    
+    def _create_environmental_adaptations(self, params: EnvironmentalParams) -> Dict:
+        """Create environmental adaptations based on parameters / Kreiranje prilagodbi okoline na temelju parametara"""
+        return {
+            "temperature_influence": params.temperature,
+            "time_of_day": params.time_of_day,
+            "weather_condition": self._simulate_historical_weather(params.temperature),
+            "atmospheric_pressure": self._simulate_atmospheric_conditions(params),
+            "lighting_conditions": self._calculate_lighting(params.time_of_day),
+            "crowd_density": params.visitor_count
+        }
+    
+    def _simulate_historical_weather(self, temperature: float) -> str:
+        """Enhanced weather simulation / Poboljšana simulacija vremena"""
+        if temperature > 35:
+            return "hot_mediterranean_summer"
+        elif temperature > 25:
+            return "warm_pleasant_day"
+        elif temperature > 15:
+            return "mild_spring_weather"
+        elif temperature > 5:
+            return "cool_autumn_day"
+        else:
+            return "cold_winter_conditions"
+    
+    def _simulate_atmospheric_conditions(self, params: EnvironmentalParams) -> Dict:
+        """Simulate atmospheric conditions / Simulacija atmosferskih uvjeta"""
+        base_pressure = 1013.25  # Standard atmospheric pressure / Standardni atmosferski tlak
+        
+        # Simple altitude simulation based on location type / Jednostavna simulacija nadmorske visine na temelju vrste lokacije
+        altitude_factor = {
+            LocationType.URBAN: 0,
+            LocationType.RURAL: 200,
+            LocationType.RELIGIOUS: 300,
+            LocationType.ARCHAEOLOGICAL: 150
+        }.get(params.location_type, 0)
+        
+        pressure = base_pressure * (1 - altitude_factor * 0.0001)
+        
+        return {
+            "pressure_hpa": pressure,
+            "humidity": 50 + (params.temperature - 20) * 1.5,
+            "wind_speed": np.random.uniform(0, 15)
+        }
+    
+    def _calculate_lighting(self, time_of_day: str) -> Dict:
+        """Calculate lighting conditions / Izračun uvjeta osvjetljenja"""
+        lighting_map = {
+            "dawn": {"intensity": 0.3, "color_temp": 2000, "shadows": "long"},
+            "morning": {"intensity": 0.7, "color_temp": 3500, "shadows": "medium"},
+            "midday": {"intensity": 1.0, "color_temp": 5500, "shadows": "short"},
+            "afternoon": {"intensity": 0.8, "color_temp": 4000, "shadows": "medium"},
+            "evening": {"intensity": 0.4, "color_temp": 2500, "shadows": "long"},
+            "night": {"intensity": 0.1, "color_temp": 1500, "shadows": "none"}
+        }
+        
+        return lighting_map.get(time_of_day, lighting_map["midday"])
+    
+    def _create_fallback_scene(self, start_time: float) -> SceneOutput:
+        """Create fallback scene when generation fails / Kreiranje rezervne scene kada generacija ne uspije"""
+        generation_time = time.time() - start_time
+        
+        return SceneOutput(
+            scene_name=self.fallback_scenes['scene_name'],
+            audio_file=self.fallback_scenes['audio'],
+            visual_model=self.fallback_scenes['visual'],
+            olfactory_profile=self.fallback_scenes['olfactory'],
+            description=self.fallback_scenes['description'],
+            confidence_score=self.fallback_scenes['confidence_score'],
+            generation_time=generation_time,
+            environmental_adaptation={"fallback": True}
+        )
+    
+    def get_engine_stats(self) -> Dict:
+        """Return engine statistics / Vraća statistike engine-a"""
+        return {
+            "num_qubits": self.num_qubits,
+            "cache_size": self.cache_size,
+            "available_periods": [p.value for p in HistoricalPeriod],
+            "available_locations": [l.value for l in LocationType],
+            "total_scenes": sum(len(scenes) for scenes in self.scene_database.values()),
+            "cache_info": self._calculate_probability_distribution.cache_info()._asdict() if hasattr(self._calculate_probability_distribution, 'cache_info') else {}
+        }
+
+# Test function / Test funkcija
+def test_enhanced_engine():
+    """Test function for engine validation / Test funkcija za validaciju engine-a"""
+    print("🧪 Testing Enhanced Quantum-Inspired Engine...")
+    print("🧪 Testiranje poboljšanog kvantno-inspiriranog engine-a...")
+    
+    engine = EnhancedQuantumInspiredEngine()
+    
+    # Test parameters / Test parametri
+    test_params = EnvironmentalParams(
+        temperature=25.0,
+        historical_period=HistoricalPeriod.ROMAN,
+        location_type=LocationType.URBAN,
+        time_of_day="afternoon",
+        visitor_count=5
+    )
+    
+    try:
+        # Generate scene / Generiraj scenu
+        scene = engine.generate_historical_scene(test_params)
+        
+        print(f"✅ Scene Generated / Scena generirana: {scene.scene_name}")
+        print(f"   Audio: {scene.audio_file}")
+        print(f"   Visual: {scene.visual_model}")
+        print(f"   Confidence / Pouzdanost: {scene.confidence_score:.2f}")
+        print(f"   Generation Time / Vrijeme generacije: {scene.generation_time:.3f}s")
+        print(f"   Description / Opis: {scene.description}")
+        
+        # Test engine stats / Test statistike engine-a
+        stats = engine.get_engine_stats()
+        print(f"\n📊 Engine Stats / Statistike engine-a:")
+        print(f"   Total Scenes / Ukupno scena: {stats['total_scenes']}")
+        print(f"   Available Periods / Dostupna razdoblja: {len(stats['available_periods'])}")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Test failed / Test neuspješan: {e}")
+        return False
+
+if __name__ == "__main__":
+    test_enhanced_engine()
+```
+
+### 2. Configuration Manager
+
+#### src/utils/config_manager.py
+
+```python
+"""
+Configuration Manager for QInspired Heritage AR
+Manages configuration files and scene data
+
+Upravitelj konfiguracije za QInspired Heritage AR
+Upravlja datotekama konfiguracije i podacima scena
+"""
+
+import json
+import yaml
+import os
+from typing import Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+class ConfigManager:
+    """Manages configuration files and scene data / Upravlja datotekama konfiguracije i podacima scena"""
+    
+    def __init__(self, config_dir: str = "assets/config"):
+        self.config_dir = config_dir
+        self.scenes_config = {}
+        self.app_config = {}
+        self._ensure_config_directory()
+        self._load_configurations()
+    
+    def _ensure_config_directory(self):
+        """Create config directory if it doesn't exist / Stvori direktorij konfiguracije ako ne postoji"""
+        os.makedirs(self.config_dir, exist_ok=True)
+    
+    def _load_configurations(self):
+        """Load all configuration files / Učitaj sve datoteke konfiguracije"""
+        try:
+            self._load_scenes_config()
+            self._load_app_config()
+        except Exception as e:
+            logger.error(f"Failed to load configurations / Neuspješno učitavanje konfiguracija: {e}")
+            self._create_default_configs()
+    
+    def _load_scenes_config(self):
+        """Load scenes configuration from YAML / Učitaj konfiguraciju scena iz YAML-a"""
+        scenes_file = os.path.join(self.config_dir, "scenes.yaml")
+        
+        if os.path.exists(scenes_file):
+            with open(scenes_file, 'r', encoding='utf-8') as f:
+                self.scenes_config = yaml.safe_load(f)
+        else:
+            self.scenes_config = self._get_default_scenes_config()
+            self.save_scenes_config()
+    
+    def _load_app_config(self):
+        """Load application configuration from JSON / Učitaj konfiguraciju aplikacije iz JSON-a"""
+        app_file = os.path.join(self.config_dir, "app_config.json")
+        
+        if os.path.exists(app_file):
+            with open(app_file, 'r', encoding='utf-8') as f:
+                self.app_config = json.load(f)
+        else:
+            self.app_config = self._get_default_app_config()
+            self.save_app_config()
