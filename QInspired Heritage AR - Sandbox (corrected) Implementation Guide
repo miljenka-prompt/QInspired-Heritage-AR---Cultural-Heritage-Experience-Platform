@@ -1,0 +1,625 @@
+# QInspired Heritage AR - Sandbox Implementation Guide
+QInspired Heritage AR - Vodič za Sandbox Implementaciju
+
+## Hrvatski
+**QInspired Heritage AR** je sandbox platforma za augmentiranu stvarnost (ARWeb) koja koristi 8th Wall za stvaranje povijesnih scena, fokusirajući se na testiranje. Ova verzija je dizajnirana za eksperimentiranje s WebAR-om, uz privremene kvantno-inspirirane simulacije na klasičnom hardveru.
+
+**Ključne funkcionalnosti:**
+- **WebAR s 8th Wall**: QR kodovi za interaktivne scene.
+- **Testiranje scena**: Dinamička generacija vizualnih i audio elemenata.
+- **Sandbox okruženje**: Jednostavno postavljanje za razvoj i testiranje.
+
+**Brzo pokretanje:**
+```bash
+mkdir qinspired-heritage-ar && cd qinspired-heritage-ar
+mkdir -p src/{core,adapters,tests} assets/{config,models}
+cp -r [ovaj vodič] .
+pip install -r requirements.txt
+npm install
+docker-compose up -d
+npm test
+```
+
+## English
+**QInspired Heritage AR** is a sandbox augmented reality (ARWeb) platform using 8th Wall to create historical scenes, designed for testing. This version focuses on WebAR experimentation with temporary quantum-inspired simulations on classical hardware.
+
+**Key Features:**
+- **WebAR with 8th Wall**: QR code-based interactive scenes.
+- **Scene Testing**: Dynamic generation of visual and audio elements.
+- **Sandbox Environment**: Easy setup for development and testing.
+
+**Quick Start:**
+```bash
+mkdir qinspired-heritage-ar && cd qinspired-heritage-ar
+mkdir -p src/{core,adapters,tests} assets/{config,models}
+cp -r [this guide] .
+pip install -r requirements.txt
+npm install
+docker-compose up -d
+npm test
+```
+
+## Project Structure / Struktura Projekta
+
+```
+qinspired-heritage-ar/
+├── src/
+│   ├── core/
+│   │   ├── quantum_engine.py          # Simulacija generacije scena
+│   │   └── __init__.py
+│   ├── adapters/
+│   │   ├── webar_adapter.js           # 8th Wall WebAR adapter
+│   │   └── __init__.py
+│   ├── tests/
+│   │   ├── test_quantum_engine.py     # Testovi engine-a
+│   │   ├── test_webar.js              # Testovi WebAR-a
+│   │   └── __init__.py
+│   ├── api/
+│   │   ├── main.py                    # FastAPI backend
+│   │   └── __init__.py
+│   └── config/
+│       ├── config_manager.py          # Configuration manager
+│       └── __init__.py
+├── assets/
+│   ├── config/
+│   │   ├── scenes.yaml                # Konfiguracija scena
+│   │   └── app_config.json            # App konfiguracija
+│   ├── models/                        # 3D modeli za testiranje
+│   └── web/
+│       └── index.html                 # WebAR entry point
+├── docker/
+│   ├── Dockerfile                     # Docker slika
+│   └── docker-compose.yml             # Sandbox stack
+├── requirements.txt                   # Python dependencies
+├── package.json                       # Node.js dependencies
+└── README.md                          # Dokumentacija
+```
+
+## Implementation / Implementacija
+
+### 1. Core Quantum Engine (Sandbox)
+#### src/core/quantum_engine.py
+```python
+import numpy as np
+import logging
+from enum import Enum
+from dataclasses import dataclass
+from typing import Dict, List, Any
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class HistoricalPeriod(Enum):
+    ROMAN = "roman"
+    MEDIEVAL = "medieval"
+    RENAISSANCE = "renaissance"
+
+@dataclass
+class SceneOutput:
+    scene_name: str
+    visual_model: str
+    audio_file: str
+    description: str
+    metadata: Dict[str, Any] = None
+
+class QuantumEngine:
+    def __init__(self):
+        self.scene_database = {
+            HistoricalPeriod.ROMAN.value: [
+                {
+                    "scene_name": "roman_forum",
+                    "visual_model": "forum_3d.glb",
+                    "audio_file": "market_sounds.mp3",
+                    "description": "Roman forum marketplace scene",
+                    "metadata": {"period": "27 BC - 476 AD", "location": "Rome"}
+                }
+            ]
+        }
+
+    def generate_scene(self, period: HistoricalPeriod = HistoricalPeriod.ROMAN) -> SceneOutput:
+        try:
+            scenes = self.scene_database.get(period.value, [])
+            if not scenes:
+                raise ValueError(f"No scenes available for period: {period.value}")
+            
+            # For sandbox, return first scene. In production, use quantum-inspired selection
+            scene_data = scenes[0]
+            logger.info(f"Generated scene: {scene_data['scene_name']}")
+            
+            return SceneOutput(
+                scene_name=scene_data["scene_name"],
+                visual_model=scene_data["visual_model"],
+                audio_file=scene_data["audio_file"],
+                description=scene_data["description"],
+                metadata=scene_data.get("metadata", {})
+            )
+        except Exception as e:
+            logger.error(f"Error generating scene: {e}")
+            raise
+
+def test_engine():
+    engine = QuantumEngine()
+    scene = engine.generate_scene()
+    print(f"✅ Scene: {scene.scene_name}")
+    print(f"   Model: {scene.visual_model}")
+    print(f"   Audio: {scene.audio_file}")
+    return scene
+
+if __name__ == "__main__":
+    test_engine()
+```
+
+### 2. WebAR Adapter (8th Wall)
+#### src/adapters/webar_adapter.js
+```javascript
+// Note: 8th Wall requires proper API key and initialization
+// This is a simplified sandbox version
+
+class WebARAdapter {
+    constructor() {
+        this.isInitialized = false;
+        this.currentScene = null;
+    }
+
+    async initialize() {
+        try {
+            // In production, use: AFRAME.registerComponent for 8th Wall
+            console.log('Initializing WebAR with 8th Wall...');
+            
+            // Simulate 8th Wall initialization
+            await this.simulateXRInit();
+            
+            this.isInitialized = true;
+            console.log('✅ WebAR initialized successfully');
+            return true;
+        } catch (error) {
+            console.error('❌ WebAR initialization failed:', error);
+            return false;
+        }
+    }
+
+    async simulateXRInit() {
+        // Simulate async initialization delay
+        return new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    async loadScene(sceneData) {
+        if (!this.isInitialized) {
+            throw new Error('WebAR not initialized');
+        }
+
+        try {
+            console.log(`Loading scene: ${sceneData.scene_name}`);
+            
+            // In production, load actual 3D model
+            const modelPath = `./assets/models/${sceneData.visual_model}`;
+            console.log(`Model path: ${modelPath}`);
+            
+            // Simulate model loading
+            await this.simulateModelLoad(modelPath);
+            
+            this.currentScene = sceneData;
+            console.log('✅ Scene loaded successfully');
+            return true;
+        } catch (error) {
+            console.error('❌ Scene loading failed:', error);
+            return false;
+        }
+    }
+
+    async simulateModelLoad(modelPath) {
+        // Simulate model loading delay
+        return new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    getCurrentScene() {
+        return this.currentScene;
+    }
+}
+
+// Export for both CommonJS and ES6 modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { WebARAdapter };
+} else {
+    window.WebARAdapter = WebARAdapter;
+}
+```
+
+### 3. Configuration Manager
+#### src/config/config_manager.py
+```python
+import json
+import yaml
+import os
+from typing import Dict, Any
+
+class ConfigManager:
+    def __init__(self, config_dir: str = "assets/config"):
+        self.config_dir = config_dir
+        self.ensure_config_dir()
+        self.create_default_configs()
+
+    def ensure_config_dir(self):
+        os.makedirs(self.config_dir, exist_ok=True)
+
+    def create_default_configs(self):
+        # Create default scenes configuration
+        scenes_config = {
+            "roman": {
+                "scenes": [
+                    {
+                        "name": "roman_forum",
+                        "model": "forum_3d.glb",
+                        "audio": "market_sounds.mp3",
+                        "description": "Roman forum marketplace"
+                    }
+                ]
+            }
+        }
+        
+        scenes_path = os.path.join(self.config_dir, "scenes.yaml")
+        if not os.path.exists(scenes_path):
+            with open(scenes_path, 'w') as f:
+                yaml.dump(scenes_config, f, default_flow_style=False)
+
+        # Create app configuration
+        app_config = {
+            "app": {
+                "name": "QInspired Heritage AR",
+                "version": "0.1.0-sandbox",
+                "port": 8000,
+                "debug": True
+            },
+            "webar": {
+                "engine": "8thwall",
+                "api_key": "YOUR_8THWALL_API_KEY_HERE"
+            }
+        }
+        
+        app_config_path = os.path.join(self.config_dir, "app_config.json")
+        if not os.path.exists(app_config_path):
+            with open(app_config_path, 'w') as f:
+                json.dump(app_config, f, indent=2)
+
+    def load_scenes_config(self) -> Dict[str, Any]:
+        scenes_path = os.path.join(self.config_dir, "scenes.yaml")
+        with open(scenes_path, 'r') as f:
+            return yaml.safe_load(f)
+
+    def load_app_config(self) -> Dict[str, Any]:
+        app_config_path = os.path.join(self.config_dir, "app_config.json")
+        with open(app_config_path, 'r') as f:
+            return json.load(f)
+```
+
+### 4. FastAPI Backend
+#### src/api/main.py
+```python
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+import uvicorn
+import sys
+import os
+
+# Add src to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from core.quantum_engine import QuantumEngine, HistoricalPeriod
+from config.config_manager import ConfigManager
+
+app = FastAPI(title="QInspired Heritage AR API", version="0.1.0-sandbox")
+engine = QuantumEngine()
+config_manager = ConfigManager()
+
+# Serve static files
+app.mount("/static", StaticFiles(directory="assets"), name="static")
+
+@app.get("/")
+async def root():
+    return {"message": "QInspired Heritage AR API - Sandbox Version"}
+
+@app.get("/generate-scene/{period}")
+async def generate_scene(period: str):
+    try:
+        period_enum = HistoricalPeriod(period.lower())
+        scene = engine.generate_scene(period_enum)
+        return {
+            "scene_name": scene.scene_name,
+            "visual_model": scene.visual_model,
+            "audio_file": scene.audio_file,
+            "description": scene.description,
+            "metadata": scene.metadata
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@app.get("/config")
+async def get_config():
+    try:
+        app_config = config_manager.load_app_config()
+        return app_config
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Config error: {str(e)}")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+```
+
+### 5. Tests
+#### src/tests/test_quantum_engine.py
+```python
+import pytest
+import sys
+import os
+
+# Add src to path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from core.quantum_engine import QuantumEngine, HistoricalPeriod, SceneOutput
+
+def test_quantum_engine_initialization():
+    engine = QuantumEngine()
+    assert engine.scene_database is not None
+    assert HistoricalPeriod.ROMAN.value in engine.scene_database
+
+def test_generate_scene():
+    engine = QuantumEngine()
+    scene = engine.generate_scene()
+    
+    assert isinstance(scene, SceneOutput)
+    assert scene.scene_name == "roman_forum"
+    assert scene.visual_model == "forum_3d.glb"
+    assert scene.audio_file == "market_sounds.mp3"
+
+def test_generate_scene_with_period():
+    engine = QuantumEngine()
+    scene = engine.generate_scene(HistoricalPeriod.ROMAN)
+    
+    assert scene.scene_name == "roman_forum"
+    assert scene.metadata is not None
+
+def test_invalid_period():
+    engine = QuantumEngine()
+    with pytest.raises(ValueError):
+        # This should work in current implementation, but test structure is ready
+        # for when more periods are added
+        engine.generate_scene(HistoricalPeriod.MEDIEVAL)
+```
+
+#### src/tests/test_webar.js
+```javascript
+// Simple test for WebAR adapter
+const { WebARAdapter } = require('../adapters/webar_adapter.js');
+
+describe('WebAR Adapter Tests', () => {
+    let adapter;
+
+    beforeEach(() => {
+        adapter = new WebARAdapter();
+    });
+
+    test('should initialize successfully', async () => {
+        const result = await adapter.initialize();
+        expect(result).toBe(true);
+        expect(adapter.isInitialized).toBe(true);
+    });
+
+    test('should load scene after initialization', async () => {
+        await adapter.initialize();
+        
+        const sceneData = {
+            scene_name: 'test_scene',
+            visual_model: 'test_model.glb',
+            audio_file: 'test_audio.mp3',
+            description: 'Test scene'
+        };
+
+        const result = await adapter.loadScene(sceneData);
+        expect(result).toBe(true);
+        expect(adapter.getCurrentScene()).toEqual(sceneData);
+    });
+
+    test('should fail to load scene without initialization', async () => {
+        const sceneData = {
+            scene_name: 'test_scene',
+            visual_model: 'test_model.glb',
+            audio_file: 'test_audio.mp3',
+            description: 'Test scene'
+        };
+
+        await expect(adapter.loadScene(sceneData)).rejects.toThrow('WebAR not initialized');
+    });
+});
+```
+
+### 6. Configuration Files
+
+#### requirements.txt
+```
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pyyaml==6.0.1
+numpy==1.24.3
+pytest==7.4.3
+pytest-asyncio==0.21.1
+python-multipart==0.0.6
+```
+
+#### package.json
+```json
+{
+  "name": "qinspired-heritage-ar",
+  "version": "0.1.0-sandbox",
+  "description": "Sandbox WebAR platform for historical scenes",
+  "main": "src/adapters/webar_adapter.js",
+  "scripts": {
+    "test": "jest",
+    "start": "python src/api/main.py",
+    "dev": "nodemon --exec python src/api/main.py"
+  },
+  "dependencies": {
+    "aframe": "^1.4.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.js"]
+  }
+}
+```
+
+#### docker-compose.yml
+```yaml
+version: '3.8'
+services:
+  qinspired-ar:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./assets:/app/assets
+    environment:
+      - PYTHONPATH=/app
+      - DEBUG=1
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./assets/web:/usr/share/nginx/html
+    depends_on:
+      - qinspired-ar
+```
+
+#### docker/Dockerfile
+```dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src/ ./src/
+COPY assets/ ./assets/
+
+ENV PYTHONPATH=/app
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+#### assets/web/index.html
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QInspired Heritage AR - Sandbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>QInspired Heritage AR - Sandbox</h1>
+        <p>WebAR testing environment</p>
+        <button onclick="initializeAR()">Start AR Experience</button>
+        <div id="status"></div>
+    </div>
+
+    <a-scene id="scene" embedded style="height: 400px; width: 100%; display: none;">
+        <a-entity id="model-container"></a-entity>
+        <a-camera></a-camera>
+    </a-scene>
+
+    <script>
+        async function initializeAR() {
+            const statusDiv = document.getElementById('status');
+            const scene = document.getElementById('scene');
+            
+            try {
+                statusDiv.innerHTML = 'Initializing AR...';
+                
+                // Initialize WebAR adapter
+                const adapter = new WebARAdapter();
+                await adapter.initialize();
+                
+                // Fetch scene data
+                const response = await fetch('/generate-scene/roman');
+                const sceneData = await response.json();
+                
+                // Load scene
+                await adapter.loadScene(sceneData);
+                
+                statusDiv.innerHTML = `Loaded scene: ${sceneData.scene_name}`;
+                scene.style.display = 'block';
+                
+            } catch (error) {
+                statusDiv.innerHTML = `Error: ${error.message}`;
+                console.error('AR initialization failed:', error);
+            }
+        }
+    </script>
+    
+    <!-- Include WebAR adapter -->
+    <script src="/static/web/webar_adapter.js"></script>
+</body>
+</html>
+```
+
+## Setup i Testiranje
+
+### 1. Instalacija
+```bash
+# Python dependencies
+pip install -r requirements.txt
+
+# Node.js dependencies
+npm install
+
+# Create necessary directories
+mkdir -p assets/{models,config,web}
+mkdir -p src/{core,adapters,tests,api,config}
+```
+
+### 2. Pokretanje
+```bash
+# Development mode
+docker-compose up -d
+
+# Or manual start
+python src/api/main.py
+```
+
+### 3. Testiranje
+```bash
+# Python tests
+pytest src/tests/test_quantum_engine.py -v
+
+# JavaScript tests
+npm test
+
+# Manual API test
+curl http://localhost:8000/generate-scene/roman
+```
+
+### 4. WebAR test
+Otvori `http://localhost:8000/static/web/index.html` u pregledniku za testiranje WebAR funkcionalnosti.
+
+## Napomene
+- Ovo je sandbox verzija za testiranje WebAR funkcionalnosti
+- 8th Wall API key je potreban za produkciju
+- Kvantno-inspirirani algoritmi su simulirani za sada
+- 3D modeli trebaju biti dodani u `assets/models/` direktorij
