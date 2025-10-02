@@ -1,0 +1,624 @@
+```markdown
+### Overall Status
+[PASS / FAIL / PARTIAL]
+
+### Additional Notes
+[Bilo koji dodatni komentari ili zapažanja]
+```
+
+
+
+## 🔐 SECURITY NOTES / SIGURNOSNE NAPOMENE
+
+### Za Sandbox Testing:
+- ✅ CORS je postavljen na `allow_origins=["*"]` - **OVO JE OK ZA TESTIRANJE**
+- ✅ Debug mode je uključen
+- ✅ Nema autentifikacije
+
+### Za Production:
+- ⚠️ **MORA SE PROMIJENITI CORS** na specifične domene
+- ⚠️ Dodati API key autentifikaciju
+- ⚠️ Isključiti debug mode
+- ⚠️ Dodati rate limiting
+- ⚠️ Koristiti HTTPS (obavezno za WebAR)
+
+
+ 🎯 8TH WALL INTEGRATION (Production)
+
+Kada testirate s pravim 8th Wall API key-em:
+
+### 1. Dobij API Key
+```
+1. Registriraj se na https://www.8thwall.com/
+2. Kreiraj novi projekt
+3. Kopiraj App Key
+```
+
+### 2. Ažuriraj assets/config/app_config.json
+```json
+{
+  "app": {
+    "name": "QInspired Heritage AR",
+    "version": "0.1.0-sandbox",
+    "port": 8000,
+    "debug": true
+  },
+  "webar": {
+    "engine": "8thwall",
+    "api_key": "TVOJ_PRAVI_API_KEY_OVDJE"
+  }
+}
+```
+
+### 3. Ažuriraj index.html
+Odkomentiraj 8th Wall skripte:
+```html
+<!-- 8th Wall -->
+<script async src="//cdn.8thwall.com/web/aframe/8frame-0.9.0.min.js"></script>
+<script async src="//cdn.8thwall.com/web/xrextras/xrextras.js"></script>
+```
+
+### 4. Setup HTTPS
+8th Wall **ZAHTIJEVA** HTTPS. Koristi jednu od opcija:
+
+**Opcija A: ngrok (Najbrži način)**
+```bash
+# Instaliraj ngrok
+brew install ngrok  # macOS
+# ili download s https://ngrok.com/
+
+# Pokreni API
+python src/api/main.py
+
+# U drugom terminalu
+ngrok http 8000
+
+# Kopiraj HTTPS URL (npr. https://abc123.ngrok.io)
+# Koristi taj URL u browseru
+```
+
+**Opcija B: Local SSL Certificate**
+```bash
+# Generiraj self-signed certificate
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+
+# Ažuriraj main.py:
+if __name__ == "__main__":
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=8000,
+        ssl_keyfile="key.pem",
+        ssl_certfile="cert.pem"
+    )
+```
+
+**Opcija C: Cloudflare Tunnel**
+```bash
+# Instaliraj cloudflared
+brew install cloudflare/cloudflare/cloudflared  # macOS
+
+# Autentificiraj
+cloudflared tunnel login
+
+# Kreiraj tunnel
+cloudflared tunnel create qinspired-ar
+
+# Pokreni tunnel
+cloudflared tunnel --url http://localhost:8000
+```
+
+### 5. Test na Mobitelu
+```
+1. Pokreni HTTPS server (ngrok/cloudflare)
+2. Otvori URL na mobitelu
+3. Dozvoli camera access
+4. Point kamera na površinu
+5. Scene bi se trebala prikazati u AR
+```
+
+---
+
+## 📱 MOBILE TESTING GUIDE
+
+### Android (Chrome)
+```
+1. Pokreni HTTPS server
+2. Otvori Chrome na mobitelu
+3. Navigate to HTTPS URL
+4. Klikni "Initialize AR"
+5. Dozvoli camera permissions
+6. Klikni "Load Scene"
+7. Point na površinu (pod, stol)
+```
+
+### iOS (Safari)
+```
+1. Pokreni HTTPS server
+2. Otvori Safari na iPhonu/iPadu
+3. Navigate to HTTPS URL
+4. Klikni "Initialize AR"
+5. Dozvoli camera & motion permissions
+6. Klikni "Load Scene"
+7. Point na površinu
+```
+
+### Expected Behavior:
+- ✅ Camera feed je visible
+- ✅ 3D model se pojavljuje kada detektira površinu
+- ✅ Model je stabilan i ne "skače"
+- ✅ Može se rotirati telefon bez problema
+
+### Common Issues:
+- ❌ "Camera not supported" - Proveri HTTPS
+- ❌ Black screen - Dozvoli camera permissions
+- ❌ Model not appearing - Popravi osvjetljenje prostorije
+- ❌ Model jumping - Površina nije dobra za tracking (dodaj više texture)
+
+---
+
+## 🧪 ADVANCED TESTING
+
+### Performance Testing
+
+**Browser Performance:**
+```javascript
+// Dodaj u index.html prije </body>:
+<script>
+// Monitor FPS
+let lastTime = performance.now();
+let frames = 0;
+let fps = 0;
+
+function measureFPS() {
+    frames++;
+    const currentTime = performance.now();
+    
+    if (currentTime >= lastTime + 1000) {
+        fps = Math.round((frames * 1000) / (currentTime - lastTime));
+        console.log(`FPS: ${fps}`);
+        frames = 0;
+        lastTime = currentTime;
+    }
+    
+    requestAnimationFrame(measureFPS);
+}
+
+measureFPS();
+</script>
+```
+
+**API Response Time:**
+```bash
+# Test API latency
+time curl http://localhost:8000/generate-scene/roman
+
+# Expected: < 100ms
+```
+
+### Load Testing
+
+```bash
+# Instaliraj Apache Bench
+sudo apt-get install apache2-utils  # Linux
+brew install httpd  # macOS
+
+# Test API
+ab -n 1000 -c 10 http://localhost:8000/health
+
+# Očekivani rezultati:
+# - Requests per second: > 100
+# - Time per request: < 100ms
+# - Failed requests: 0
+```
+
+### Memory Testing
+
+**Python:**
+```python
+# Dodaj u test_quantum_engine.py:
+import tracemalloc
+
+def test_memory_usage():
+    tracemalloc.start()
+    
+    engine = QuantumEngine()
+    for i in range(100):
+        scene = engine.generate_scene()
+    
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    
+    print(f"Current memory: {current / 1024 / 1024:.2f} MB")
+    print(f"Peak memory: {peak / 1024 / 1024:.2f} MB")
+    
+    # Memory should be < 50MB for this test
+    assert peak < 50 * 1024 * 1024
+```
+
+**Browser:**
+```javascript
+// U Chrome DevTools:
+// 1. Otvori Performance tab
+// 2. Click Record
+// 3. Initialize AR & Load Scene
+// 4. Stop recording
+// 5. Check JS Heap size (should be < 100MB)
+```
+
+---
+
+## 🐳 DOCKER TESTING
+
+### Build i Run
+
+```bash
+# Build Docker image
+docker build -f docker/Dockerfile -t qinspired-ar:sandbox .
+
+# Run container
+docker run -p 8000:8000 qinspired-ar:sandbox
+
+# Test
+curl http://localhost:8000/health
+```
+
+### Docker Compose
+
+```bash
+# Start all services
+docker-compose -f docker/docker-compose.yml up -d
+
+# Check logs
+docker-compose logs -f qinspired-ar
+
+# Stop services
+docker-compose down
+```
+
+### Expected Output:
+```
+qinspired-ar_1  | INFO:     Started server process
+qinspired-ar_1  | INFO:     Uvicorn running on http://0.0.0.0:8000
+nginx_1         | nginx: [notice] started
+```
+
+---
+
+## 📈 METRICS TO COLLECT
+
+Tijekom testiranja, prikupite sljedeće metrike:
+
+### Performance Metrics
+```yaml
+Backend:
+  - API response time (ms)
+  - Requests per second
+  - Memory usage (MB)
+  - CPU usage (%)
+
+Frontend:
+  - Page load time (ms)
+  - First Contentful Paint (ms)
+  - Time to Interactive (ms)
+  - FPS (frames per second)
+
+WebAR:
+  - Initialization time (ms)
+  - Scene load time (ms)
+  - Model render time (ms)
+  - Tracking stability (qualitative)
+```
+
+### Compatibility Matrix
+```yaml
+Browsers:
+  - Chrome 90+: [PASS/FAIL]
+  - Firefox 88+: [PASS/FAIL]
+  - Safari 14+: [PASS/FAIL]
+  - Edge 90+: [PASS/FAIL]
+
+Mobile:
+  - Android 10+ (Chrome): [PASS/FAIL]
+  - iOS 14+ (Safari): [PASS/FAIL]
+
+Desktop OS:
+  - Windows 10/11: [PASS/FAIL]
+  - macOS 11+: [PASS/FAIL]
+  - Ubuntu 20.04+: [PASS/FAIL]
+```
+
+---
+
+## 🔄 CI/CD SETUP (Opciono)
+
+Za kontinuiranu integraciju, kreiraj `.github/workflows/test.yml`:
+
+```yaml
+name: QInspired AR Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    
+    - name: Run Python tests
+      run: |
+        pytest src/tests/test_quantum_engine.py -v
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+    
+    - name: Install Node dependencies
+      run: npm install
+    
+    - name: Run JavaScript tests
+      run: npm test
+```
+
+
+### Za bug reports:
+Koristi template:
+```markdown
+**Bug Description:**
+[Kratak opis problema]
+
+**Steps to Reproduce:**
+1. [Korak 1]
+2. [Korak 2]
+3. [Korak 3]
+
+**Expected Behavior:**
+[Što bi trebalo biti]
+
+**Actual Behavior:**
+[Što se zapravo događa]
+
+**Environment:**
+- OS: [npr. Windows 11]
+- Browser: [npr. Chrome 120]
+- Python: [npr. 3.9.7]
+
+**Screenshots:**
+[Attach ako relevantno]
+
+**Console Logs:**
+```
+[Paste console errors ovdje]
+```
+```
+
+
+
+## ✅ FINAL VALIDATION CHECKLIST
+
+Prije nego što označite testiranje kao kompletno:
+
+### Documentation
+- [ ] Pročitao/la sam cijeli dokument
+- [ ] Razumijem arhitekturu projekta
+- [ ] Znam gdje su svi fileovi
+- [ ] Razumijem kako testirati svaki component
+
+### Setup
+- [ ] Kreirane su sve potrebne direktorije
+- [ ] Svi fileovi su kopirani na prava mjesta
+- [ ] Dependencies su instalirane (Python + Node.js)
+- [ ] webar_adapter.js je kopiran u assets/web/
+
+### Backend Testing
+- [ ] pytest testovi prolaze (100%)
+- [ ] API se pokreće bez errora
+- [ ] /health endpoint vraća status "healthy"
+- [ ] /generate-scene/roman vraća valjan scene JSON
+- [ ] CORS headers su prisutni u odgovorima
+
+### Frontend Testing
+- [ ] index.html se učitava u browseru
+- [ ] "Health Check" button uspješno kontaktira API
+- [ ] "Initialize AR" uspješno inicijalizira adapter
+- [ ] "Load Scene" fetcha i prikazuje scene
+- [ ] Debug panel pokazuje korektne informacije
+- [ ] Nema JavaScript errora u console-u
+
+### Integration Testing
+- [ ] Frontend i Backend komuniciraju ispravno
+- [ ] Scene data se uspješno transferira
+- [ ] A-Frame scene se prikazuje
+- [ ] Sve funkcionalnosti rade kako treba
+
+### Documentation
+- [ ] Popunjen je validation report
+- [ ] Dokumentirani su svi pronađeni bugovi
+- [ ] Screenshotovi su snimljeni gdje je potrebno
+- [ ] Prijedlozi za poboljšanje su zabilježeni
+
+### Optional (Production)
+- [ ] 8th Wall API key je konfiguriran (ako testirate)
+- [ ] HTTPS je postavljen (ako testirate)
+- [ ] Mobile testing je izveden (ako testirate)
+- [ ] Performance metrics su prikupljene (ako testirate)
+
+
+## 🎓 LEARNING RESOURCES
+
+Za bolje razumijevanje tehnologija:
+
+### WebAR / 8th Wall
+- [8th Wall Documentation](https://docs.8thwall.com/)
+- [A-Frame School](https://aframe.io/aframe-school/)
+- [WebXR Device API](https://www.w3.org/TR/webxr/)
+
+### FastAPI
+- [FastAPI Tutorial](https://fastapi.tiangolo.com/tutorial/)
+- [Uvicorn Documentation](https://www.uvicorn.org/)
+
+### Testing
+- [Pytest Documentation](https://docs.pytest.org/)
+- [Jest Documentation](https://jestjs.io/docs/getting-started)
+
+---
+
+## 📄 LICENSE
+
+```
+QInspired Heritage AR Platform
+Copyright © 2025 Miljenka Ćurković. All rights reserved.
+
+This work is licensed under the Creative Commons 
+Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+
+For testing and validation purposes only.
+Not for production use without explicit permission.
+```
+
+
+## 🎉 ZAKLJUČAK
+
+Ovaj dokument sadrži sve što je potrebno za uspješno testiranje QInspired Heritage AR prototipa. 
+
+### Prioriteti:
+1. **PRVO:** Setup i Backend testiranje
+2. **DRUGO:** Frontend testiranje u browseru
+3. **TREĆE:** Integration testiranje
+4. **OPCIONO:** Mobile i 8th Wall testiranje
+
+### Očekivano vrijeme:
+- **Osnovni setup:** 30-60 minuta
+- **Backend testing:** 15-30 minuta
+- **Frontend testing:** 30-60 minuta
+- **Integration testing:** 15-30 minuta
+- **UKUPNO:** 2-3 sata za kompletnu validaciju
+
+### U slučaju problema:
+1. Pročitaj **Debugging Guide** sekciju
+2. Provjeri **Common Issues**
+3. Provjeri da li su svi **Prerequisites** zadovoljeni
+4. Kontaktiraj support ako problem persists
+
+---
+
+**Sretno s testiranjem! 🚀**
+
+**Good luck with testing! 🚀**
+
+---
+
+*Dokument verzija: 1.0*  
+*Datum: October 2025*  
+*Autor: QInspired Heritage AR Team*
+
+---
+
+## 📎 APPENDIX A: Quick Reference Commands
+
+```bash
+# Setup
+pip install -r requirements.txt
+npm install
+npm run setup
+
+# Run API
+python src/api/main.py
+
+# Run Tests
+pytest src/tests/test_quantum_engine.py -v
+npm test
+
+# Health Check
+curl http://localhost:8000/health
+
+# Generate Scene
+curl http://localhost:8000/generate-scene/roman
+
+# Docker
+docker-compose up -d
+docker-compose logs -f
+docker-compose down
+
+# HTTPS with ngrok
+ngrok http 8000
+```
+
+---
+
+## 📎 APPENDIX B: Troubleshooting Quick Guide
+
+| Problem | Quick Fix |
+|---------|-----------|
+| API won't start | Check if port 8000 is free: `lsof -i :8000` |
+| CORS error | Verify CORS middleware in main.py |
+| WebAR adapter not found | Copy: `cp src/adapters/webar_adapter.js assets/web/` |
+| Scene not loading | Check browser console for errors |
+| pytest fails | Verify PYTHONPATH: `export PYTHONPATH=$(pwd)` |
+| npm test fails | Install dependencies: `npm install` |
+| Docker build fails | Check Dockerfile path and context |
+| 8th Wall not working | Verify API key and HTTPS |
+| Mobile camera not working | Enable HTTPS and camera permissions |
+| FPS too low | Reduce model complexity |
+
+---
+
+## 📎 APPENDIX C: File Checklist
+
+Provjerite da postoje svi sljedeći fileovi:
+
+```
+✅ Core Files
+  └─ src/core/quantum_engine.py
+  └─ src/core/__init__.py
+
+✅ Adapters
+  └─ src/adapters/webar_adapter.js
+  └─ src/adapters/__init__.py
+
+✅ API
+  └─ src/api/main.py (with CORS fix!)
+  └─ src/api/__init__.py
+
+✅ Config
+  └─ src/config/config_manager.py
+  └─ src/config/__init__.py
+
+✅ Tests
+  └─ src/tests/test_quantum_engine.py
+  └─ src/tests/test_webar.js
+  └─ src/tests/__init__.py
+
+✅ Assets
+  └─ assets/web/index.html (updated version!)
+  └─ assets/web/webar_adapter.js (copied from src!)
+  └─ assets/config/scenes.yaml (auto-created)
+  └─ assets/config/app_config.json (auto-created)
+
+✅ Docker
+  └─ docker/Dockerfile
+  └─ docker/docker-compose.yml
+
+✅ Config Files
+  └─ requirements.txt
+  └─ package.json
+  └─ README.md (this file)
+```
+
+---
+
+**END OF DOCUMENT**
+```
+
+
