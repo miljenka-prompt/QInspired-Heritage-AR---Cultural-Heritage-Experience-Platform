@@ -3,6 +3,7 @@
 **Version:** 2.0.0  
 **Status:** Production Ready  
 **Last Updated:** 2025-10-09
+©Miljenka Ćurković, product owner&concept developer (Code by Claude Sonnet 4,5), License - see Licence
 
 This is the complete implementation guide combining the Sandbox Guide and WebAR Implementation. Everything you need to deploy QInspired Heritage AR.
 
@@ -917,4 +918,4 @@ docker-compose restart backend
 **Problem**: WebAR not loading
 - Check browser console
 - Verify HTTPS in production
-- Check 8
+- Check 8th Wall API key, browser support, network connection
